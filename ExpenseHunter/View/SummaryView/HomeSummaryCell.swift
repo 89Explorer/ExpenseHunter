@@ -19,7 +19,7 @@ class HomeSummaryCell: UICollectionViewCell {
         }
     }
     
-    var isMenuOpen: Bool = false {
+    var isMenuOpen: Bool = true {
         didSet {
             updateMonthButtonTitle()
         }
