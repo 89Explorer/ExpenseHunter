@@ -26,7 +26,6 @@ class HomeSummaryCell: UICollectionViewCell {
     }
     
     
-    
     // MARK: - UI Component
     private let monthButton: UIButton = UIButton(type: .system)
     private let imageView: UIImageView = UIImageView()
@@ -102,22 +101,29 @@ class HomeSummaryCell: UICollectionViewCell {
         if let expenseRange = fullText.range(of: "지출") {
             attributedString.addAttribute(.foregroundColor, value: UIColor.systemRed, range: NSRange(expenseRange, in: fullText))
         }
+        
         if let statusRange = fullText.range(of: "수입 / 지출") {
-            attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 16), range: NSRange(statusRange, in: fullText))
+            attributedString.addAttribute(
+                .font,
+                value: UIFont(name: "SB_OTF_B", size: 16) ?? UIFont.systemFont(ofSize: 16),
+                range: NSRange(statusRange, in: fullText)
+            )
         }
+
         if let monthRange = fullText.range(of: "\(selectedMonth)월") {
             let nsRange = NSRange(monthRange, in: fullText)
             attributedString.addAttributes([
-                .font: UIFont.systemFont(ofSize: 20, weight: .semibold)
+                .font: UIFont(name: "SB_OTF_B", size: 20) ?? UIFont.systemFont(ofSize: 20, weight: .semibold)
             ], range: nsRange)
         }
 
         if let statusRange = fullText.range(of: "현황") {
             let nsRange = NSRange(statusRange, in: fullText)
             attributedString.addAttributes([
-                .font: UIFont.systemFont(ofSize: 20, weight: .semibold)
+                .font: UIFont(name: "SB_OTF_B", size: 20) ?? UIFont.systemFont(ofSize: 20, weight: .semibold)
             ], range: nsRange)
         }
+
         monthButton.setAttributedTitle(attributedString, for: .normal)
     }
     

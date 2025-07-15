@@ -83,7 +83,7 @@ class ExpenseCalendarCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
             
             calendarView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 4),
             calendarView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),

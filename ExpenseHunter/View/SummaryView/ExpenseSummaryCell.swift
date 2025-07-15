@@ -39,8 +39,9 @@ class ExpenseSummaryCell: UITableViewCell {
         dateLabel.font = .systemFont(ofSize: 10, weight: .bold)
         
         sortLabel.text = "근로소득"
+        sortLabel.font = UIFont(name: "SB_OTF_B", size: 10)
         sortLabel.textColor = .secondaryLabel
-        sortLabel.font = .systemFont(ofSize: 10, weight: .semibold)
+        //sortLabel.font = .systemFont(ofSize: 10, weight: .semibold)
         
         let stackView = UIStackView(arrangedSubviews: [dateLabel, sortLabel])
         stackView.axis = .vertical
