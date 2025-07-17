@@ -133,6 +133,10 @@ extension AddCustomCell {
         valueLabel.text = "₩ \(formatter.string(from: NSNumber(value: amount)) ?? "0")"
     }
     
+    func updateMemoValue(with memo: String) {
+        valueLabel.text = memo
+    }
+    
 }
 
 

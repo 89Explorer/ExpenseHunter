@@ -26,6 +26,7 @@ class AddTransactionViewController: UIViewController {
     // 선택된 날짜를 저장하기 위한 변수
     private var selectedDate: Date?
     private var selectedAmount: Int?
+    private var selectedMemo: String?
     
     
     // MARK: - UI Component
@@ -38,6 +39,7 @@ class AddTransactionViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .secondarySystemBackground
         configureUI()
+        self.updateTitle()
     }
     
     
@@ -96,7 +98,7 @@ class AddTransactionViewController: UIViewController {
         default:
             titleLabel.text = "영수증 작성"
         }
-
+        
         titleLabel.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
         titleLabel.sizeToFit()
         
@@ -155,6 +157,10 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
                 if let selectedAmount = selectedAmount {
                     cell.updateAmountValue(with: selectedAmount)
                 }
+            } else  if section == .memo {
+                if let selectedMemo = selectedMemo {
+                    cell.updateMemoValue(with: selectedMemo.isEmpty == false ? selectedMemo : "메모를 입력하세요")
+                }
             }
             
             return cell
@@ -209,6 +215,7 @@ extension AddTransactionViewController: AddCustomCellDelegate {
             print("분류 valueLabel 눌림")
         case .memo:
             print("메모 valueLabel 눌림")
+            presentMemoPicker(currentMemo: selectedMemo)
         default:
             print("기타 valueLabel 눌림")
         }
@@ -227,14 +234,6 @@ extension AddTransactionViewController: AddCustomCellDelegate {
             print("🔁 Date picked: \(selectedDate)")
             self?.selectedDate = selectedDate
             self?.addTableView.reloadRows(at: [IndexPath(row: 0, section: AddSection.date.rawValue)], with: .none)
-            
-            //            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            //                guard let self = self else { return }
-            //                let nextIndexPath = IndexPath(row: 0, section: AddSection.date.rawValue)
-            //                if let cell = self.addTableView.cellForRow(at: nextIndexPath) as? AddCustomCell {
-            //                    cell.updateDateValue(with: selectedDate)
-            //                }
-            //            }
         }
         
         if let sheet = dateVC.sheetPresentationController {
@@ -266,6 +265,25 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         
         present(amountVC, animated: true)
     }
+    
+    private func presentMemoPicker(currentMemo: String?) {
+        let memoVC = AddMemoViewController()
+        memoVC.modalPresentationStyle = .pageSheet
+        memoVC.existingMemo = currentMemo
+        
+        memoVC.onMemoEntered = { [weak self] memo in
+            self?.selectedMemo = memo
+            self?.addTableView.reloadRows(at: [IndexPath(row: 0, section: AddSection.memo.rawValue)], with: .none)
+        }
+        
+        if let sheet = memoVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+        }
+        
+        present(memoVC, animated: true)
+    }
+    
 }
 
 
