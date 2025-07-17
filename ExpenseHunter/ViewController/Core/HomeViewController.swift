@@ -41,12 +41,15 @@ class HomeViewController: UIViewController {
         expenseTableview.register(HomeChartCell.self, forCellReuseIdentifier: HomeChartCell.reuseIdentifier)
         expenseTableview.register(HomeTodayStatusCell.self, forCellReuseIdentifier: HomeTodayStatusCell.reuseIdentifier)
         
-        floatingButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 24)
+        let plusImage = UIImage(systemName: "plus", withConfiguration: config)
+        floatingButton.setImage(plusImage, for: .normal)
         floatingButton.tintColor = .label
         floatingButton.backgroundColor = .systemOrange
         floatingButton.layer.cornerRadius = 28
         floatingButton.layer.shadowOpacity = 0.3
         floatingButton.layer.shadowRadius = 8
+        floatingButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         
         view.addSubview(expenseTableview)
         view.addSubview(floatingButton)
@@ -66,12 +69,20 @@ class HomeViewController: UIViewController {
             floatingButton.heightAnchor.constraint(equalToConstant: 56)
         ])
     }
+
     
+    // MARK - Action Method
     @objc private func moreButtonTapped(_ sender: UIButton) {
         guard let section = HomeSection(rawValue: sender.tag) else { return }
         print("더보기 버튼 탭됨: \(section)")
         
         // 예: delegate를 통해 전달하거나, 화면 전환 등
+    }
+    
+    @objc private func addButtonTapped(_ sender: UIButton) {
+        print("글쓰기 버튼 눌림")
+        let addTransactionVC = AddTransactionViewController()
+        navigationController?.pushViewController(addTransactionVC, animated: true)
     }
 }
 
@@ -166,10 +177,20 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         
-        let moreButton = UIButton(type: .system)
-        moreButton.setTitle("더보기", for: .normal)
-        moreButton.setTitleColor(.systemBlue, for: .normal)
-        moreButton.titleLabel?.font = UIFont(name: "OTSLAggroB", size: 12)
+        let moreButton = UIButton(configuration: {
+            var config = UIButton.Configuration.filled()
+            config.title = "더보기"
+            config.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8) // padding
+            config.baseBackgroundColor = .systemBackground
+            config.baseForegroundColor = .label
+            config.cornerStyle = .capsule
+            config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+                var outgoing = incoming
+                outgoing.font = UIFont(name: "OTSBAggroL", size: 12)
+                return outgoing
+            }
+            return config
+        }())
         moreButton.translatesAutoresizingMaskIntoConstraints = false
         
         // 버튼 액션은 필요 시 Target-Action 또는 delegate로 전달

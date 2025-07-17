@@ -40,7 +40,6 @@ class HomeTodayStatusCell: UITableViewCell {
         containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 8
         
-        
         statusImageView.image = UIImage(systemName: "fork.knife")
         statusImageView.tintColor = .label
         statusImageView.contentMode = .scaleAspectFit
