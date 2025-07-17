@@ -132,14 +132,6 @@ extension AddCustomCell {
         valueLabel.text = "₩ \(formatter.string(from: NSNumber(value: amount)) ?? "0")"
     }
     
-    
-    func setHighlight() {
-        // UILabel은 기본적으로 UIResponder가 아니기 때문에, 편법으로 탭 효과를 낼 수 있음
-        // 예: 텍스트 필드로 바꿨다면 .becomeFirstResponder() 가능
-        valueLabel.backgroundColor = UIColor.systemYellow.withAlphaComponent(0.3)
-        
-        // 필요하면 진짜로 텍스트 입력을 받을 수 있도록 UILabel → UITextField 로 교체
-    }
 }
 
 
