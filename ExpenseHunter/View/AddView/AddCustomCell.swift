@@ -52,6 +52,7 @@ class AddCustomCell: UITableViewCell {
         valueLabel.text = ""
         valueLabel.font = UIFont(name: "OTSBAggroB", size: 12)
         valueLabel.textColor = .label
+        valueLabel.numberOfLines = 0
         valueLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         valueLabel.isUserInteractionEnabled = true
         

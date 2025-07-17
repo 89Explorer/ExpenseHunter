@@ -17,6 +17,7 @@ class AddTransactionViewController: UIViewController {
             // 수입 / 지출 버튼이 선택되면 자동으로 date 섹션이 선택된 걸로 간주
             selectedIndexPath = IndexPath(row: 0, section: AddSection.date.rawValue)
             updateTitle()
+            self.saveButton.backgroundColor = selectedTransactionType == .expense ? .systemRed : .systemGreen
             self.addTableView.reloadData()
         }
     }
@@ -43,8 +44,6 @@ class AddTransactionViewController: UIViewController {
     // MARK: - Function
     private func configureUI() {
         
-        self.title = "지출 입력"
-        
         addTableView.showsVerticalScrollIndicator = false
         addTableView.layer.cornerRadius = 12
         addTableView.backgroundColor = .systemBackground
@@ -61,8 +60,9 @@ class AddTransactionViewController: UIViewController {
         
         saveButton.setTitle("저장하기", for: .normal)
         saveButton.setTitleColor(.label, for: .normal)
+        saveButton.titleLabel?.font = UIFont(name: "OTSBAggroB", size: 20)
         saveButton.layer.cornerRadius = 16
-        saveButton.backgroundColor = .systemBlue
+        saveButton.backgroundColor = .systemRed
         
         view.addSubview(addTableView)
         view.addSubview(saveButton)
@@ -84,14 +84,23 @@ class AddTransactionViewController: UIViewController {
     
     // AddType에서 선택한 버튼에 따라 제목 설정
     func updateTitle() {
+        let titleLabel: UILabel = UILabel()
+        titleLabel.textColor = .label
+        titleLabel.textAlignment = .center
+        
         switch selectedTransactionType {
         case .income:
-            self.title = "수입 입력"
+            titleLabel.text = "수입 입력"
         case .expense:
-            self.title = "지출 입력"
+            titleLabel.text = "지출 입력"
         default:
-            self.title = "영수증 작성"
+            titleLabel.text = "영수증 작성"
         }
+
+        titleLabel.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
+        titleLabel.sizeToFit()
+        
+        self.navigationItem.titleView = titleLabel
     }
 }
 
@@ -119,7 +128,7 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
             cell.configure(selectedType: selectedTransactionType)
             return cell
             
-        case .date, .amount, .category:
+        case .date, .amount, .category, .memo:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: AddCustomCell.reuseIdentifier, for: indexPath) as? AddCustomCell else { return UITableViewCell() }
             cell.configure(title: section.title)
             cell.selectionStyle = .none
@@ -161,8 +170,9 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let section = AddSection(rawValue: indexPath.section) else { fatalError("Invalid section") }
         switch section {
-        case .addType, .date, .amount, .category:
-            return 48
+        case .addType, .date, .amount, .category, .memo:
+            return 52
+            //return UITableView.automaticDimension
         default:
             return UITableView.automaticDimension
         }
@@ -197,6 +207,8 @@ extension AddTransactionViewController: AddCustomCellDelegate {
             presentAmountCalculator()
         case .category:
             print("분류 valueLabel 눌림")
+        case .memo:
+            print("메모 valueLabel 눌림")
         default:
             print("기타 valueLabel 눌림")
         }
@@ -206,6 +218,7 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         
     }
     
+    // 날짜를 선택하는 AddDateViewController를 여는 메서드
     private func presentCalendarPicker() {
         let dateVC = AddDateViewController()
         dateVC.modalPresentationStyle = .pageSheet
@@ -215,13 +228,13 @@ extension AddTransactionViewController: AddCustomCellDelegate {
             self?.selectedDate = selectedDate
             self?.addTableView.reloadRows(at: [IndexPath(row: 0, section: AddSection.date.rawValue)], with: .none)
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                guard let self = self else { return }
-                let nextIndexPath = IndexPath(row: 0, section: AddSection.date.rawValue)
-                if let cell = self.addTableView.cellForRow(at: nextIndexPath) as? AddCustomCell {
-                    cell.updateDateValue(with: selectedDate)
-                }
-            }
+            //            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            //                guard let self = self else { return }
+            //                let nextIndexPath = IndexPath(row: 0, section: AddSection.date.rawValue)
+            //                if let cell = self.addTableView.cellForRow(at: nextIndexPath) as? AddCustomCell {
+            //                    cell.updateDateValue(with: selectedDate)
+            //                }
+            //            }
         }
         
         if let sheet = dateVC.sheetPresentationController {
@@ -244,20 +257,15 @@ extension AddTransactionViewController: AddCustomCellDelegate {
                 at: [IndexPath(row: 0, section: AddSection.amount.rawValue)],
                 with: .none
             )
-            
-            // 다음 섹션으로 이동
-            let nextIndexPath = IndexPath(row: 0, section: AddSection.category.rawValue)
-            self.addTableView.scrollToRow(at: nextIndexPath, at: .middle, animated: true)
         }
-
+        
         if let sheet = amountVC.sheetPresentationController {
             sheet.detents = [.medium()]
             sheet.prefersGrabberVisible = true
         }
-
+        
         present(amountVC, animated: true)
     }
-
 }
 
 
@@ -269,11 +277,13 @@ enum AddSection: Int, CaseIterable {
     case category
     case memo
     
+    
     var title: String {
         switch self {
         case .date: return "날짜"
         case .amount: return "금액"
         case .category: return "분류"
+        case .memo: return "메모"
         default: return ""
         }
     }
