@@ -42,12 +42,12 @@ class AddCustomCell: UITableViewCell {
     
     // MARK: - Function
     private func configureUI() {
-        contentView.backgroundColor = .clear
+        contentView.backgroundColor = .systemBackground
         
         titleLabel.text = "날짜"
         titleLabel.font = UIFont(name: "OTSBAggroB", size: 16)
         titleLabel.textColor = .label
-        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        //titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
         valueLabel.text = ""
         valueLabel.font = UIFont(name: "OTSBAggroB", size: 12)

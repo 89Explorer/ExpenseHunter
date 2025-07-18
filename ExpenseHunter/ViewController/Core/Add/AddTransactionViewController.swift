@@ -59,6 +59,7 @@ class AddTransactionViewController: UIViewController {
         addTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         addTableView.register(AddTypeCell.self, forCellReuseIdentifier: AddTypeCell.reuseIdentifier)
         addTableView.register(AddCustomCell.self, forCellReuseIdentifier: AddCustomCell.reuseIdentifier)
+        addTableView.register(AddImageCell.self, forCellReuseIdentifier: AddImageCell.reuseIdentifier)
         
         saveButton.setTitle("저장하기", for: .normal)
         saveButton.setTitleColor(.label, for: .normal)
@@ -159,11 +160,18 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
                 }
             } else  if section == .memo {
                 if let selectedMemo = selectedMemo {
-                    cell.updateMemoValue(with: selectedMemo.isEmpty == false ? selectedMemo : "메모를 입력하세요")
+                    cell.updateMemoValue(with: selectedMemo)
                 }
             }
             
             return cell
+            
+        case .image:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AddImageCell.reuseIdentifier, for: indexPath) as? AddImageCell else { return UITableViewCell() }
+            cell.configure(title: section.title)
+            cell.delegate = self
+            return cell
+            
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             cell.textLabel?.text = "TEST"
@@ -287,6 +295,16 @@ extension AddTransactionViewController: AddCustomCellDelegate {
 }
 
 
+// MARK: - Extension: AddImageCell 내에서 selectedImage를 눌렀을 때 동작할 메서드
+extension AddTransactionViewController: AddImageCellDelegate {
+    func selectedImageTapped(_ image: UIImage) {
+        let popupVC = PopupImageViewController(image: image)
+        popupVC.modalPresentationStyle = .formSheet // 또는 .fullScreen, .automatic
+        navigationController?.pushViewController(popupVC, animated: true)
+    }
+}
+
+
 // MARK: - Enum: 작성 테이블 섹션 관리
 enum AddSection: Int, CaseIterable {
     case addType
@@ -294,6 +312,7 @@ enum AddSection: Int, CaseIterable {
     case amount
     case category
     case memo
+    case image
     
     
     var title: String {
@@ -302,6 +321,7 @@ enum AddSection: Int, CaseIterable {
         case .amount: return "금액"
         case .category: return "분류"
         case .memo: return "메모"
+        case .image: return "사진"
         default: return ""
         }
     }

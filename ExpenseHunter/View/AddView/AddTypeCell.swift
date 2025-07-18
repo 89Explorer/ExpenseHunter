@@ -40,7 +40,7 @@ class AddTypeCell: UITableViewCell {
     
     // MARK: - Function
     private func configureUI() {
-        contentView.backgroundColor = .clear
+        contentView.backgroundColor = .systemBackground
         
         incomeButton.setTitle("📥 수입", for: .normal)
         incomeButton.titleLabel?.font = UIFont(name: "OTSBAggroB", size: 16)
