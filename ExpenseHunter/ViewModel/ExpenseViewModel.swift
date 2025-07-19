@@ -33,35 +33,40 @@ class ExpenseViewModel {
                 category: "식비",
                 amount: 12000,
                 image: nil,
-                date: formatter.date(from: "2025-07-01")!
+                date: formatter.date(from: "2025-07-01")!,
+                memo: ""
             ),
             ExpenseModel(
                 transaction: .expense,
                 category: "교통비",
                 amount: 3500,
                 image: nil,
-                date: formatter.date(from: "2025-07-03")!
+                date: formatter.date(from: "2025-07-03")!,
+                memo: ""
             ),
             ExpenseModel(
                 transaction: .income,
                 category: "월급",
                 amount: 3000000,
                 image: nil,
-                date: formatter.date(from: "2025-07-01")!
+                date: formatter.date(from: "2025-07-01")!,
+                memo: ""
             ),
             ExpenseModel(
                 transaction: .income,
                 category: "보너스",
                 amount: 500000,
                 image: nil,
-                date: formatter.date(from: "2025-07-10")!
+                date: formatter.date(from: "2025-07-10")!,
+                memo: ""
             ),
             ExpenseModel(
                 transaction: .expense,
                 category: "문화생활",
                 amount: 25000,
                 image: nil,
-                date: formatter.date(from: "2025-07-08")!
+                date: formatter.date(from: "2025-07-08")!,
+                memo: ""
             )
         ]
     }

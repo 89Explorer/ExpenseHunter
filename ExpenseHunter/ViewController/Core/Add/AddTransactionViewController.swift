@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import PhotosUI
+
 
 class AddTransactionViewController: UIViewController {
     
@@ -22,11 +24,13 @@ class AddTransactionViewController: UIViewController {
         }
     }
     private var selectedIndexPath: IndexPath?
+    private var currentImageCellIndexPath: IndexPath?    // 카메라 버튼이 눌린 셀을 기억하기 위한 indexPath
     
     // 선택된 날짜를 저장하기 위한 변수
     private var selectedDate: Date?
     private var selectedAmount: Int?
     private var selectedMemo: String?
+    private var selectedImage: UIImage?     // 이건 안쓴다... 왜냐하면 셀 내부의 통신이기 때문에 전역적으로 관리할 필요 없다. 
     
     
     // MARK: - UI Component
@@ -39,6 +43,7 @@ class AddTransactionViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .secondarySystemBackground
         configureUI()
+        checkPhotoLibraryPermission()
         self.updateTitle()
     }
     
@@ -251,6 +256,7 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         present(dateVC, animated: true)
     }
     
+    // 금액을 선택하는 AddAmountViewController를 여는 메서드
     private func presentAmountCalculator() {
         let amountVC = AddAmountViewController()
         amountVC.modalPresentationStyle = .pageSheet
@@ -274,6 +280,7 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         present(amountVC, animated: true)
     }
     
+    // 메모를 선택하는 AddMemoViewController를 여는 메서드
     private func presentMemoPicker(currentMemo: String?) {
         let memoVC = AddMemoViewController()
         memoVC.modalPresentationStyle = .pageSheet
@@ -297,11 +304,186 @@ extension AddTransactionViewController: AddCustomCellDelegate {
 
 // MARK: - Extension: AddImageCell 내에서 selectedImage를 눌렀을 때 동작할 메서드
 extension AddTransactionViewController: AddImageCellDelegate {
+    func didTapCameraButton(in cell: AddImageCell) {
+        // 눌린 셀의 indexPath 저장
+        if let indexPath = addTableView.indexPath(for: cell) {
+            currentImageCellIndexPath = indexPath
+            showCameraAndAlbum()
+        }
+    }
+    
+    
     func selectedImageTapped(_ image: UIImage) {
         let popupVC = PopupImageViewController(image: image)
         popupVC.modalPresentationStyle = .formSheet // 또는 .fullScreen, .automatic
         navigationController?.pushViewController(popupVC, animated: true)
     }
+    
+}
+
+
+// MARK: - Extension: 카메라와 앨범 접근권한 설정하는 메서드
+extension AddTransactionViewController {
+    private func checkPhotoLibraryPermission() {
+        
+        MediaPermissionManager.shared.checkAndRequestIfNeeded(.album) { [weak self] granted in
+            guard let self else { return }
+            if granted {
+                print("앨범 접근 승인")
+            } else {
+                print("앨범 접근 불허")
+                self.showPermissionAlert(title: "앨범 접근이 필요합니다.", message: "설정에서 권한을 허용해주세요 ")
+            }
+        }
+        
+        MediaPermissionManager.shared.checkAndRequestIfNeeded(.camera) { [weak self] granted in
+            guard let self else { return }
+            if granted {
+                print("카메라 접근 승인")
+            } else {
+                print("카메라 접근 불허")
+                self.showPermissionAlert(title: "카메라 접근이 필요합니다.", message: "설정에서 권한을 허용해주세요 ")
+            }
+        }
+        
+    }
+    
+    func showPermissionAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+            guard let settingURL = URL(string: UIApplication.openSettingsURLString) else { return }
+            UIApplication.shared.open(settingURL)
+        })
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        present(alert, animated: true)
+    }
+}
+
+
+// MARK: - Extension: 카메라 및 앨범 실행 부분
+extension AddTransactionViewController: UIImagePickerControllerDelegate, PHPickerViewControllerDelegate, UINavigationControllerDelegate {
+    
+    private func showCameraAndAlbum() {
+        let alert = UIAlertController(title: "카메라 또는 앨범 선택", message: nil, preferredStyle: .actionSheet)
+        
+        let showCameraAction = UIAlertAction(title: "Camera", style: .default) { _ in
+            print("카메라 선택")
+            MediaPermissionManager.shared.checkAndRequestIfNeeded(.camera) { [weak self] granted in
+                guard let self else { return }
+                if granted {
+                    self.openCamera()
+                } else {
+                    self.showPermissionAlert(title: "카메라 권한이 필요합니다.", message: "설정으로 이동하여 권한을 승인하세요")
+                }
+            }
+            //self.openCamera()
+        }
+        
+        let choosePhotoAction = UIAlertAction(title: "Photo Library", style: .default) { _ in
+            print("사진첩 선택")
+            MediaPermissionManager.shared.checkAndRequestIfNeeded(.album) { [weak self] granted in
+                guard let self else { return }
+                if granted {
+                    print("사진첩을 선택헤서 사진첩으로 접근합니다.")
+                    self.presentPhotoPicker()
+                } else {
+                    self.showPermissionAlert(title: "사진첩 권한이 필요합니다.", message: "설정으로 이동하여 권한을 승인하세요")
+                }
+            }
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alert.addAction(showCameraAction)
+        alert.addAction(choosePhotoAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func openCamera() {
+        let imagePicker = UIImagePickerController()
+        
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            imagePicker.sourceType = .camera
+            imagePicker.delegate = self
+            present(imagePicker, animated: true, completion: nil)
+        } else {
+            print("카메라 접근 권한이 필요합니다.")
+        }
+    }
+    
+    // 카메라로 찍은 이미지 사용
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        
+        guard let image = info[.originalImage] as? UIImage else { return }
+        
+        //        let receiptVC = ReceiptViewController(receiptImage: image)
+        //        receiptVC.modalPresentationStyle = .fullScreen
+        //        self.present(receiptVC, animated: true)
+        
+        DispatchQueue.main.async {
+            //            let receiptVC = ReceiptViewController(receiptImage: image)
+            //            let nav = UINavigationController(rootViewController: receiptVC)
+            //            nav.modalPresentationStyle = .fullScreen
+            //            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+            //               let window = windowScene.windows.first,
+            //               let rootVC = window.rootViewController {
+            //                rootVC.present(nav, animated: true)
+            //            }
+            self.applySelectedImageToCell(image)
+        }
+    }
+    
+    // 사진첩에서 사진선택 및 설정하는 함수
+    func presentPhotoPicker() {
+        var config = PHPickerConfiguration()
+        config.selectionLimit = 1
+        config.filter = .images
+        
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    // 사진첩에서 선택하나 후 호출되는 함수
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        guard let result = results.first,
+              result.itemProvider.canLoadObject(ofClass: UIImage.self) else { return }
+        
+        result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
+            guard let self, let image = object as? UIImage else { return }
+            
+            DispatchQueue.main.async {
+                //                let receiptVC = ReceiptViewController(receiptImage: image)
+                //                let nav = UINavigationController(rootViewController: receiptVC)
+                //                nav.modalPresentationStyle = .fullScreen
+                //                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                //                   let window = windowScene.windows.first,
+                //                   let rootVC = window.rootViewController {
+                //                    rootVC.present(nav, animated: true)
+                //                }
+                self.applySelectedImageToCell(image)
+            }
+            
+        }
+    }
+    
+    // 선택한 사진을 selectedImage가 있는 AddImageCell로 전달하기 위한 메서드를 호출하는 메서드
+    private func applySelectedImageToCell(_ image: UIImage) {
+        guard let indexPath = currentImageCellIndexPath,
+              let cell = addTableView.cellForRow(at: indexPath) as? AddImageCell else { return }
+        
+        cell.setImage(image) // AddImageCell에 setImage(image:) 같은 함수 구현 필요
+    }
+    
+    @objc private func addReceipt() {
+        self.showCameraAndAlbum()
+    }
+    
 }
 
 

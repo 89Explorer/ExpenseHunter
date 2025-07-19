@@ -60,7 +60,7 @@ class AddImageCell: UITableViewCell {
         seperator.backgroundColor = .secondaryLabel
         
         selectedImage.backgroundColor = .secondarySystemBackground
-        selectedImage.image = UIImage(named: "test")
+        selectedImage.image = nil
         selectedImage.layer.cornerRadius = 12
         selectedImage.contentMode = .scaleAspectFill
         selectedImage.clipsToBounds = true
@@ -70,12 +70,13 @@ class AddImageCell: UITableViewCell {
         innerStack.axis = .vertical
         innerStack.spacing = 2
         innerStack.distribution = .fill
-        innerStack.alignment = .fill
+        innerStack.alignment = .leading
         
         let totalStack: UIStackView = UIStackView(arrangedSubviews: [titleLabel, innerStack])
         totalStack.axis = .horizontal
         totalStack.spacing = 20
         totalStack.distribution = .fill
+        totalStack.alignment = .fill
         
         totalStack.translatesAutoresizingMaskIntoConstraints = false
         
@@ -95,10 +96,11 @@ class AddImageCell: UITableViewCell {
             totalStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
             totalStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
             
-            cameraButton.heightAnchor.constraint(equalToConstant: 30),
-            //cameraButton.widthAnchor.constraint(equalToConstant: 30),
+            //cameraButton.heightAnchor.constraint(equalToConstant: 30),
+            cameraButton.widthAnchor.constraint(equalToConstant: 30),
             
             seperator.heightAnchor.constraint(equalToConstant: 2),
+            //seperator.widthAnchor.constraint(equalTo: selectedImage.widthAnchor),
             selectedImage.heightAnchor.constraint(equalToConstant: 250),
             
             deleteButton.trailingAnchor.constraint(equalTo: selectedImage.trailingAnchor, constant: -4),
@@ -117,10 +119,12 @@ class AddImageCell: UITableViewCell {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTappedImage))
         selectedImage.addGestureRecognizer(tapGesture)
         
+        cameraButton.addTarget(self, action: #selector(didTappedCamera), for: .touchUpInside)
         deleteButton.addTarget(self, action: #selector(didTappedDeleteButton), for: .touchUpInside)
     }
     
-    func updateSelectedImage(_ image: UIImage?) {
+    // 선택한 사진을 selectedImage에 전달 
+    func setImage(_ image: UIImage?) {
         selectedImage.image = image
         deleteButton.isHidden = (image == nil)
     }
@@ -138,10 +142,17 @@ class AddImageCell: UITableViewCell {
         selectedImage.image = nil
         deleteButton.isHidden = true
     }
+    
+    @objc private func didTappedCamera() {
+        print("Camera Tapped")
+        delegate?.didTapCameraButton(in: self)
+    }
 }
 
 
 // MARK: - Protocol: selectedImage를 눌렀을 떄 뷰컨트롤러 보여주는 델리게이트패턴
 protocol AddImageCellDelegate: AnyObject {
     func selectedImageTapped(_ image: UIImage)
+    // cameraButton을 눌렀을 때 동작할 메서드
+    func didTapCameraButton(in cell: AddImageCell)
 }

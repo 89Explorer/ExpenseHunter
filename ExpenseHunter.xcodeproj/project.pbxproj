@@ -7,10 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A12C8D2A2E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12C8D292E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift */; };
+		A12C8D2B2E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12C8D282E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift */; };
 		A1E343322E2594A2007FF1D0 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = A1E343312E2594A2007FF1D0 /* DGCharts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A12C8D282E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExpenseEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A12C8D292E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExpenseEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A1E3430C2E244A04007FF1D0 /* ExpenseHunter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpenseHunter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -50,6 +54,8 @@
 		A1D188462E20247A0085F8A5 = {
 			isa = PBXGroup;
 			children = (
+				A12C8D282E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift */,
+				A12C8D292E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift */,
 				A1D188512E20247A0085F8A5 /* ExpenseHunter */,
 				A1E3430C2E244A04007FF1D0 /* ExpenseHunter.app */,
 			);
@@ -130,6 +136,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A12C8D2A2E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift in Sources */,
+				A12C8D2B2E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
