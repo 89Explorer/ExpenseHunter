@@ -137,6 +137,10 @@ extension AddCustomCell {
         valueLabel.text = memo
     }
     
+    func updateCategoryValue(with category: String) {
+        valueLabel.text = category
+    }
+    
 }
 
 

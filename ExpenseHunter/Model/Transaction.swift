@@ -76,12 +76,12 @@ enum TransactionType: String {
 // 가계부 데이터 모델
 class ExpenseModel {
     let id: UUID
-    let transaction: TransactionType
-    let category: String   // ✅ 사용자는 context menu에서 선택하게 될 것
-    let amount: Int
-    let image: UIImage?
-    let date: Date
-    let memo: String
+    var transaction: TransactionType
+    var category: String   // ✅ 사용자는 context menu에서 선택하게 될 것
+    var amount: Int
+    var image: UIImage?
+    var date: Date
+    var memo: String
 
     init(id: UUID = UUID(),
          transaction: TransactionType,

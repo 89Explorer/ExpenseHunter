@@ -18,6 +18,14 @@ final class TransactionViewModel {
     @Published var transactions: [ExpenseModel] = []
     @Published var errorMessage: String?
     
+    var currentCategories: [String] {
+        transaction?.transaction.categoryOptions ?? []
+    }
+    
+    var currentCategoryIcons: [String: String] {
+        transaction?.transaction.categoryImageMap ?? [:]
+    }
+    
     private var cancellables: Set<AnyCancellable> = []
     private let transactionManager = TransactionCoreDataManager.shared
     
@@ -42,13 +50,13 @@ final class TransactionViewModel {
     
     // MARK: - Function
     // Create
-    func createTransaction(with image: UIImage) {
+    func createTransaction() {
         guard let transaction = transaction else {
             errorMessage = "Transaction no data"
             return
         }
         
-        transactionManager.createTransaction(transaction, image: image)
+        transactionManager.createTransaction(transaction)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:

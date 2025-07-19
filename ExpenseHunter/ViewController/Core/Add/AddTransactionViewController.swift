@@ -7,13 +7,17 @@
 
 import UIKit
 import PhotosUI
-
+import Combine
 
 class AddTransactionViewController: UIViewController {
     
     
     // MARK: - Variable
     private let addSection: [String] = ["구분", "날짜", "금액", "분류", "자산출처", "내용"]
+    private var transactionViewModel = TransactionViewModel()
+    private var cancellables = Set<AnyCancellable>()
+    
+    
     private var selectedTransactionType: TransactionType = .expense {
         didSet {
             // 수입 / 지출 버튼이 선택되면 자동으로 date 섹션이 선택된 걸로 간주
@@ -23,6 +27,7 @@ class AddTransactionViewController: UIViewController {
             self.addTableView.reloadData()
         }
     }
+    
     private var selectedIndexPath: IndexPath?
     private var currentImageCellIndexPath: IndexPath?    // 카메라 버튼이 눌린 셀을 기억하기 위한 indexPath
     
@@ -71,6 +76,7 @@ class AddTransactionViewController: UIViewController {
         saveButton.titleLabel?.font = UIFont(name: "OTSBAggroB", size: 20)
         saveButton.layer.cornerRadius = 16
         saveButton.backgroundColor = .systemRed
+        saveButton.addTarget(self, action: #selector(didTappedSaveButton), for: .touchUpInside)
         
         view.addSubview(addTableView)
         view.addSubview(saveButton)
@@ -109,6 +115,12 @@ class AddTransactionViewController: UIViewController {
         titleLabel.sizeToFit()
         
         self.navigationItem.titleView = titleLabel
+    }
+    
+    // MARK: - ActionMethod
+    @objc private func didTappedSaveButton() {
+        transactionViewModel.createTransaction()
+        navigationController?.popViewController(animated: true)
     }
 }
 
@@ -167,6 +179,10 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
                 if let selectedMemo = selectedMemo {
                     cell.updateMemoValue(with: selectedMemo)
                 }
+            } else {
+                if let selectedCategory = transactionViewModel.transaction?.category {
+                    cell.updateCategoryValue(with: selectedCategory)
+                }
             }
             
             return cell
@@ -203,6 +219,7 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
 extension AddTransactionViewController: AddTypeCellDelegate {
     func didSelectTransactionType(_ type: TransactionType) {
         selectedTransactionType = type
+        transactionViewModel.transaction?.transaction = type   // viewModel 전달
         // 만약 .category 섹션도 갱신하려면 여기에 reload 추가
         // tableView.reloadSections([AddSection.category.rawValue], with: .automatic)
     }
@@ -226,6 +243,7 @@ extension AddTransactionViewController: AddCustomCellDelegate {
             presentAmountCalculator()
         case .category:
             print("분류 valueLabel 눌림")
+            presentCategoryPicker()
         case .memo:
             print("메모 valueLabel 눌림")
             presentMemoPicker(currentMemo: selectedMemo)
@@ -246,6 +264,7 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         dateVC.onDateSelected = { [weak self] selectedDate in
             print("🔁 Date picked: \(selectedDate)")
             self?.selectedDate = selectedDate
+            self?.transactionViewModel.transaction?.date = selectedDate   // ViewModel 전달
             self?.addTableView.reloadRows(at: [IndexPath(row: 0, section: AddSection.date.rawValue)], with: .none)
         }
         
@@ -264,6 +283,7 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         amountVC.onAmountSelected = { [weak self] amount in
             guard let self = self else { return }
             self.selectedAmount = amount
+            self.transactionViewModel.transaction?.amount = amount
             
             // 금액 셀 업데이트
             self.addTableView.reloadRows(
@@ -288,6 +308,7 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         
         memoVC.onMemoEntered = { [weak self] memo in
             self?.selectedMemo = memo
+            self?.transactionViewModel.transaction?.memo = memo   // viewModel에 전달
             self?.addTableView.reloadRows(at: [IndexPath(row: 0, section: AddSection.memo.rawValue)], with: .none)
         }
         
@@ -297,6 +318,24 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         }
         
         present(memoVC, animated: true)
+    }
+    
+    private func presentCategoryPicker() {
+        let categoryVC = AddCategroyViewController()
+        categoryVC.modalPresentationStyle = .pageSheet
+        categoryVC.viewModel = transactionViewModel
+        categoryVC.onCategoryEntered = { [weak self] category in
+            
+            self?.transactionViewModel.transaction?.category = category
+            self?.addTableView.reloadRows(at: [IndexPath(row: 0, section: AddSection.category.rawValue)], with: .none)
+        }
+        
+        if let sheet = categoryVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+        }
+        
+        present(categoryVC, animated: true)
     }
     
 }
@@ -432,6 +471,7 @@ extension AddTransactionViewController: UIImagePickerControllerDelegate, PHPicke
             //               let rootVC = window.rootViewController {
             //                rootVC.present(nav, animated: true)
             //            }
+            self.transactionViewModel.transaction?.image = image
             self.applySelectedImageToCell(image)
         }
     }
@@ -466,6 +506,8 @@ extension AddTransactionViewController: UIImagePickerControllerDelegate, PHPicke
                 //                   let rootVC = window.rootViewController {
                 //                    rootVC.present(nav, animated: true)
                 //                }
+                
+                self.transactionViewModel.transaction?.image = image
                 self.applySelectedImageToCell(image)
             }
             
@@ -476,7 +518,6 @@ extension AddTransactionViewController: UIImagePickerControllerDelegate, PHPicke
     private func applySelectedImageToCell(_ image: UIImage) {
         guard let indexPath = currentImageCellIndexPath,
               let cell = addTableView.cellForRow(at: indexPath) as? AddImageCell else { return }
-        
         cell.setImage(image) // AddImageCell에 setImage(image:) 같은 함수 구현 필요
     }
     

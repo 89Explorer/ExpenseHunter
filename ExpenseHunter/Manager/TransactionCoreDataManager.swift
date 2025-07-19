@@ -22,15 +22,27 @@ final class TransactionCoreDataManager {
     
     // MARK: - Function
     // Create
-    func createTransaction(_ transaction: ExpenseModel, image: UIImage) -> AnyPublisher<ExpenseModel, Error> {
+    func createTransaction(_ transaction: ExpenseModel) -> AnyPublisher<ExpenseModel, Error> {
         return Future { [weak self] promise in
-            guard let self = self else { return }
-            
-            guard let savePath = self.storageManager.saveImage(image, transaction.id.uuidString) else {
+            guard let self = self,
+                  let selectedimage = transaction.image
+            else { return }
+           
+            guard let savePath = self.storageManager.saveImage(selectedimage, transaction.id.uuidString) else {
                 print("❌ 이미지 저장 실패")
                 promise(.failure(NSError(domain: "TransactionImageSaveError", code: 1)))
                 return
             }
+            
+            // ✅ 디버깅 로그 시작
+            print("🧾 CoreDataManager: 저장할 Expense 정보 확인")
+            print("   - ID: \(transaction.id)")
+            print("   - 금액: \(transaction.amount)")
+            print("   - 날짜: \(transaction.date)")
+            print("   - 카테고리: \(transaction.category)")
+            print("   - 타입: \(transaction.transaction.rawValue)")
+            print("   - 메모: \(transaction.memo ?? "없음")")
+            print("   - 이미지 경로: \(savePath)")
             
             let expenseEntity = ExpenseEntity(context: self.context)
             expenseEntity.id = transaction.id.uuidString
