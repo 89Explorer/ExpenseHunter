@@ -143,17 +143,59 @@ final class TransactionViewModel {
                     
                     // 배열에서 삭제
                     self.transactions.removeAll { $0.id == id }
-
+                    
                     // 현재 선택된 트랜잭션도 초기화
                     if self.transaction?.id == id {
                         self.transaction = nil
                     }
-
+                    
                 } else {
                     self.errorMessage = "삭제 실패: 알 수 없는 이유"
                 }
             })
             .store(in: &cancellables)
     }
+    
+    
+    // 특정 타입, 날짜로 필터된 배열을 구하는 메서드
+//    func filteredTransactions(
+//        type: TransactionType,
+//        in date: Date,
+//        granularity: Calendar.Component = .month
+//    ) -> [ExpenseModel] {
+//        let calendar = Calendar.current
+//        
+//        return transactions.filter { transaction in
+//            guard transaction.transaction == type else { return false }
+//            return calendar.isDate(transaction.date, equalTo: date, toGranularity: granularity)
+//        }
+//    }
+    
+    // 특정 타입, 날짜를 통해 필터된 배열을 구하는 메서드
+    func filteredTransactions(
+        type: TransactionType? = nil,
+        in date: Date,
+        granularity: Calendar.Component = .month
+    ) -> [ExpenseModel] {
+        let calendar = Calendar.current
+        
+        let filtered = transactions.filter { transaction in
+            let matchesType = type == nil || transaction.transaction == type!
+            let matchesDate = calendar.isDate(transaction.date, equalTo: date, toGranularity: granularity)
+            return matchesType && matchesDate
+        }
+        
+        //return filtered.sorted { $0.date > $1.date }
+        return filtered
+    }
 
+    
+    // 누적 금액 계산
+    func totalAmount(
+        type: TransactionType,
+        in date: Date,
+        granularity: Calendar.Component = .month) -> Int {
+            let filtered = filteredTransactions(type: type, in: date, granularity: granularity)
+            return filtered.reduce(0) { $0 + $1.amount}
+        }
 }

@@ -8,7 +8,18 @@
 import UIKit
 import Combine
 
+
+@MainActor
 class HomeViewController: UIViewController {
+    
+    
+    // MARK: - Variable
+    private let transactionViewModel = TransactionViewModel()
+    private var cancellables = Set<AnyCancellable>()
+    private let now = Date()
+    private var totalIncomeThisMonth: Int?
+    private var totalExpenseThisMonth: Int?
+    private var todayTransaction: [ExpenseModel]?
     
     
     // MARK: - UI Component
@@ -22,10 +33,30 @@ class HomeViewController: UIViewController {
         view.backgroundColor = .secondarySystemBackground
         configureNavigation()
         configureUI()
+        bindViewModel()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        transactionViewModel.readAllTransactions()
     }
     
     
     // MARK: - Function
+    private func bindViewModel() {
+        transactionViewModel.$transactions
+            .receive(on: RunLoop.main)
+            .sink { [weak self] transactions in
+                guard let self else { return }
+                self.totalIncomeThisMonth = self.transactionViewModel.totalAmount(type: .income, in: self.now, granularity: .month)
+                self.totalExpenseThisMonth = self.transactionViewModel.totalAmount(type: .expense, in: self.now, granularity: .month)
+                self.todayTransaction = self.transactionViewModel.filteredTransactions(in: self.now, granularity: .day)
+                self.expenseTableview.reloadData()
+            }
+            .store(in: &cancellables)
+    }
+    
+    
     private func configureUI() {
         expenseTableview.showsVerticalScrollIndicator = false
         expenseTableview.backgroundColor = .clear
@@ -158,7 +189,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         guard let section = HomeSection(rawValue: section) else { return 1 }
         switch section {
         case .today:
-            return 5
+            if let count = todayTransaction?.count {
+                return count
+            } else {
+                return 1
+            }
         default:
             return 1
         }
@@ -176,39 +211,44 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         label.font = UIFont(name: "OTSBAggroB", size: 20)
         label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
-        
-        let moreButton = UIButton(configuration: {
-            var config = UIButton.Configuration.filled()
-            config.title = "더보기"
-            config.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8) // padding
-            config.baseBackgroundColor = .systemBackground
-            config.baseForegroundColor = .label
-            config.cornerStyle = .capsule
-            config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-                var outgoing = incoming
-                outgoing.font = UIFont(name: "OTSBAggroL", size: 12)
-                return outgoing
-            }
-            return config
-        }())
-        moreButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        // 버튼 액션은 필요 시 Target-Action 또는 delegate로 전달
-        moreButton.tag = section.rawValue
-        moreButton.addTarget(self, action: #selector(moreButtonTapped(_:)), for: .touchUpInside)
-
-        // 서브뷰 추가
         headerView.addSubview(label)
-        headerView.addSubview(moreButton)
-
+        
         NSLayoutConstraint.activate([
             label.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
             label.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
-
-            moreButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            moreButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
         ])
         
+        switch section {
+        case .income, .expense, .chart:
+            let moreButton = UIButton(configuration: {
+                var config = UIButton.Configuration.filled()
+                config.title = "더보기"
+                config.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8) // padding
+                config.baseBackgroundColor = .systemBackground
+                config.baseForegroundColor = .label
+                config.cornerStyle = .capsule
+                config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+                    var outgoing = incoming
+                    outgoing.font = UIFont(name: "OTSBAggroL", size: 12)
+                    return outgoing
+                }
+                return config
+            }())
+            moreButton.translatesAutoresizingMaskIntoConstraints = false
+            
+            // 버튼 액션은 필요 시 Target-Action 또는 delegate로 전달
+            moreButton.tag = section.rawValue
+            moreButton.addTarget(self, action: #selector(moreButtonTapped(_:)), for: .touchUpInside)
+            
+            headerView.addSubview(moreButton)
+            
+            NSLayoutConstraint.activate([
+                moreButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+                moreButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
+            ])
+        case .today:
+            break
+        }
         return headerView
         
     }
@@ -236,21 +276,21 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case .income:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeExpenseCell.reuseIdentifier, for: indexPath) as? HomeExpenseCell else { return UITableViewCell() }
-            cell.configure(with: "이번달, 누적 수입", amount: 3000000, type: .income)
+            cell.configure(with: "이번달, 누적 수입", amount: totalIncomeThisMonth ?? 0, type: .income)
             return cell
         case .expense:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeExpenseCell.reuseIdentifier, for: indexPath) as? HomeExpenseCell else { return UITableViewCell() }
-            
-            cell.configure(with: "이번달, 누적 지출", amount: 300000, type: .expense)
+            cell.configure(with: "이번달, 누적 지출", amount: totalExpenseThisMonth ?? 0, type: .expense)
             return cell
         case .today:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTodayStatusCell.reuseIdentifier, for: indexPath) as? HomeTodayStatusCell else { return UITableViewCell() }
-            return cell 
+            cell.selectionStyle = .none
+            if let item = todayTransaction?[todayTransaction!.count - 1 - indexPath.row] {
+                cell.configure(with: item)
+            }
+            return cell
         case .chart:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeChartCell.reuseIdentifier, for: indexPath) as? HomeChartCell else { return UITableViewCell() }
-            return cell 
-        default:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeExpenseCell.reuseIdentifier, for: indexPath) as? HomeExpenseCell else { return UITableViewCell() }
             return cell
         }
     }
