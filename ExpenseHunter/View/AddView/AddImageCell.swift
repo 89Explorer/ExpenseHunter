@@ -115,6 +115,7 @@ class AddImageCell: UITableViewCell {
         titleLabel.text = title
     }
     
+    
     func configureTappedIamge() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTappedImage))
         selectedImage.addGestureRecognizer(tapGesture)
@@ -141,6 +142,8 @@ class AddImageCell: UITableViewCell {
         print("image Delete")
         selectedImage.image = nil
         deleteButton.isHidden = true
+        delegate?.deleteImage(nil)
+        
     }
     
     @objc private func didTappedCamera() {
@@ -155,4 +158,5 @@ protocol AddImageCellDelegate: AnyObject {
     func selectedImageTapped(_ image: UIImage)
     // cameraButton을 눌렀을 때 동작할 메서드
     func didTapCameraButton(in cell: AddImageCell)
+    func deleteImage(_ image: UIImage?)
 }

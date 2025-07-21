@@ -27,6 +27,7 @@ class HomeViewController: UIViewController {
     private var floatingButton: UIButton = UIButton(type: .custom)
     
     
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -112,7 +113,7 @@ class HomeViewController: UIViewController {
     
     @objc private func addButtonTapped(_ sender: UIButton) {
         print("글쓰기 버튼 눌림")
-        let addTransactionVC = AddTransactionViewController()
+        let addTransactionVC = AddTransactionViewController(mode: .create)
         navigationController?.pushViewController(addTransactionVC, animated: true)
     }
 }
@@ -285,7 +286,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case .today:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTodayStatusCell.reuseIdentifier, for: indexPath) as? HomeTodayStatusCell else { return UITableViewCell() }
             cell.selectionStyle = .none
-            if let item = todayTransaction?[todayTransaction!.count - 1 - indexPath.row] {
+            if let item = todayTransaction?[indexPath.row] {
                 cell.configure(with: item)
             }
             return cell
@@ -295,6 +296,22 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let section = HomeSection(rawValue: indexPath.section) else {
+            fatalError("Invalid section")
+        }
+        
+        switch section {
+        case .today:
+            if let id = todayTransaction?[indexPath.row].id {
+                let editVC = AddTransactionViewController(mode: .edit(id: id))
+                navigationController?.pushViewController(editVC, animated: true)
+            }
+            print("눌린 아이템: \(todayTransaction?[indexPath.row].category)")
+        default:
+            break
+        }
+    }
 }
 
 

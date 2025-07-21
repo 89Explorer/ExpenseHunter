@@ -29,26 +29,55 @@ final class TransactionViewModel {
     private var cancellables: Set<AnyCancellable> = []
     private let transactionManager = TransactionCoreDataManager.shared
     
+    let mode: AddTransactionMode?
+    
     
     // MARK: - Init
-    init(transaction: ExpenseModel? = nil) {
-        if let transaction = transaction {
-            self.transaction = transaction  // 수정 모드 (기존 모델)
+    init(mode: AddTransactionMode? = nil) {
+        self.mode = mode
+        
+        if let mode = mode {
+            switch mode {
+            case .create:
+                self.transaction = ExpenseModel(
+                    id: UUID(),
+                    transaction: .expense,
+                    category: "",
+                    amount: 0,
+                    image: nil,
+                    date: Date(),
+                    memo: ""
+                )
+            case .edit(let id):
+                readByIDTransaction(by: id)
+            }
         } else {
-            self.transaction = ExpenseModel( // 새로 생성
-                id: UUID(),
-                transaction: .expense,
-                category: "",
-                amount: 0,
-                image: nil,
-                date: Date(),
-                memo: ""
-            )
+            // 기본 초기화 (예: HomeViewController 등에서 사용)
+            self.transaction = nil
         }
     }
     
+    //    init(transaction: ExpenseModel? = nil) {
+    //        if let transaction = transaction {
+    //            self.transaction = transaction  // 수정 모드 (기존 모델)
+    //        } else {
+    //            self.transaction = ExpenseModel( // 새로 생성
+    //                id: UUID(),
+    //                transaction: .expense,
+    //                category: "",
+    //                amount: 0,
+    //                image: nil,
+    //                date: Date(),
+    //                memo: ""
+    //            )
+    //
+    //        }
+    //    }
+    
     
     // MARK: - Function
+    
+    
     // Create
     func createTransaction() {
         guard let transaction = transaction else {
@@ -124,6 +153,45 @@ final class TransactionViewModel {
             .store(in: &cancellables)
     }
     
+    // 업데이트 메서드
+    func updateTransaction() {
+        guard let transaction = transaction else {
+            errorMessage = "Transaction no data"
+            return
+        }
+        
+        transactionManager.updateTransaction(transaction)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
+            }, receiveValue: { [weak self] updated in
+                self?.transaction = updated
+            })
+            .store(in: &cancellables)
+    }
+    
+//    func updateTransaction(_ updatedTransaction: ExpenseModel) {
+//        transactionManager.updateTransaction(updatedTransaction)
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveCompletion: { [weak self] completion in
+//                switch completion {
+//                case .finished:
+//                    break
+//                case .failure(let error):
+//                    self?.errorMessage = error.localizedDescription
+//                }
+//            }, receiveValue: { [weak self] updated in
+//                self?.transaction = updated
+//            })
+//            .store(in: &cancellables)
+//    }
+    
+    
     
     // Delete
     func deleteTransaction(by id: UUID) {
@@ -158,18 +226,18 @@ final class TransactionViewModel {
     
     
     // 특정 타입, 날짜로 필터된 배열을 구하는 메서드
-//    func filteredTransactions(
-//        type: TransactionType,
-//        in date: Date,
-//        granularity: Calendar.Component = .month
-//    ) -> [ExpenseModel] {
-//        let calendar = Calendar.current
-//        
-//        return transactions.filter { transaction in
-//            guard transaction.transaction == type else { return false }
-//            return calendar.isDate(transaction.date, equalTo: date, toGranularity: granularity)
-//        }
-//    }
+    //    func filteredTransactions(
+    //        type: TransactionType,
+    //        in date: Date,
+    //        granularity: Calendar.Component = .month
+    //    ) -> [ExpenseModel] {
+    //        let calendar = Calendar.current
+    //
+    //        return transactions.filter { transaction in
+    //            guard transaction.transaction == type else { return false }
+    //            return calendar.isDate(transaction.date, equalTo: date, toGranularity: granularity)
+    //        }
+    //    }
     
     // 특정 타입, 날짜를 통해 필터된 배열을 구하는 메서드
     func filteredTransactions(
@@ -188,7 +256,7 @@ final class TransactionViewModel {
         //return filtered.sorted { $0.date > $1.date }
         return filtered
     }
-
+    
     
     // 누적 금액 계산
     func totalAmount(
@@ -198,4 +266,21 @@ final class TransactionViewModel {
             let filtered = filteredTransactions(type: type, in: date, granularity: granularity)
             return filtered.reduce(0) { $0 + $1.amount}
         }
+    
+    
+    // 유효성 검사 메서드 
+    func validateTransaction() -> Bool {
+        guard let transaction = transaction else {
+            errorMessage = "내역 정보가 없습니다."
+            return false
+        }
+        
+        if transaction.category.isEmpty  {
+            errorMessage = "분류를 선택해주세요"
+            return false
+        }
+        
+        return true
+    }
 }
+

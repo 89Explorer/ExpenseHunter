@@ -127,7 +127,7 @@ class HomeTodayStatusCell: UITableViewCell {
             totalStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
             
             innerStackView.centerYAnchor.constraint(equalTo: totalStackView.centerYAnchor),
-            innerStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 132)
+            innerStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 136)
         ])
     }
     
@@ -157,7 +157,7 @@ class HomeTodayStatusCell: UITableViewCell {
             amountLabel.text = "- ₩ \(formattedAmount ?? "0") 원"
         }
 
-        memoImageView.tintColor = data.memo.isEmpty ? UIColor.secondaryLabel : UIColor.label
+        memoImageView.tintColor = ((data.memo?.count) == 0) ? UIColor.secondaryLabel : UIColor.label
         photoImageView.tintColor = (data.image == nil) ? UIColor.secondaryLabel : UIColor.label
         
     }

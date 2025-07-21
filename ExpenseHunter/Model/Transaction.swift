@@ -81,7 +81,7 @@ class ExpenseModel {
     var amount: Int
     var image: UIImage?
     var date: Date
-    var memo: String
+    var memo: String?
 
     init(id: UUID = UUID(),
          transaction: TransactionType,

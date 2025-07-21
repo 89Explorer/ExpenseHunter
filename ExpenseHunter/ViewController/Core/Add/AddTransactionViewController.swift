@@ -14,9 +14,9 @@ class AddTransactionViewController: UIViewController {
     
     // MARK: - Variable
     private let addSection: [String] = ["구분", "날짜", "금액", "분류", "자산출처", "내용"]
-    private var transactionViewModel = TransactionViewModel()
+    private var transactionViewModel: TransactionViewModel
     private var cancellables = Set<AnyCancellable>()
-    
+    private let mode: AddTransactionMode
     
     private var selectedTransactionType: TransactionType = .expense {
         didSet {
@@ -43,6 +43,18 @@ class AddTransactionViewController: UIViewController {
     private let saveButton: UIButton = UIButton(type: .custom)
     
     
+    // MARK: - Init
+    init(mode: AddTransactionMode) {
+        self.mode = mode
+        self.transactionViewModel = TransactionViewModel(mode: mode)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,10 +62,22 @@ class AddTransactionViewController: UIViewController {
         configureUI()
         checkPhotoLibraryPermission()
         self.updateTitle()
+        bindViewModel()
     }
     
     
     // MARK: - Function
+    private func bindViewModel() {
+        transactionViewModel.$transaction
+            .receive(on: RunLoop.main)
+            .sink { [weak self] transaction in
+                guard let self, let transaction else { return }
+                self.addTableView.reloadData()
+            }
+            .store(in: &cancellables)
+    }
+    
+    
     private func configureUI() {
         
         addTableView.showsVerticalScrollIndicator = false
@@ -107,8 +131,6 @@ class AddTransactionViewController: UIViewController {
             titleLabel.text = "수입 입력"
         case .expense:
             titleLabel.text = "지출 입력"
-        default:
-            titleLabel.text = "영수증 작성"
         }
         
         titleLabel.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
@@ -117,9 +139,30 @@ class AddTransactionViewController: UIViewController {
         self.navigationItem.titleView = titleLabel
     }
     
+    // 경고창 열어주는 메서드
+    func showAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
+    }
+
+    
     // MARK: - ActionMethod
     @objc private func didTappedSaveButton() {
-        transactionViewModel.createTransaction()
+        guard transactionViewModel.validateTransaction() else {
+            if let errorMessage = transactionViewModel.errorMessage {
+                showAlert(message: errorMessage)
+            }
+            return
+        }
+        
+        switch mode {
+        case .create:
+            transactionViewModel.createTransaction()
+        case .edit(_):
+            transactionViewModel.updateTransaction()
+        }
+        
         navigationController?.popViewController(animated: true)
     }
 }
@@ -141,11 +184,24 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
         guard let section = AddSection(rawValue: indexPath.section) else { fatalError("Invalid section") }
         
         switch section {
+//        case .addType:
+//            guard let cell = tableView.dequeueReusableCell(withIdentifier: AddTypeCell.reuseIdentifier, for: indexPath) as? AddTypeCell else { return UITableViewCell() }
+//            cell.delegate = self
+//            cell.selectionStyle = .none
+//            cell.configure(selectedType: selectedTransactionType)
+//            return cell
         case .addType:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: AddTypeCell.reuseIdentifier, for: indexPath) as? AddTypeCell else { return UITableViewCell() }
             cell.delegate = self
             cell.selectionStyle = .none
-            cell.configure(selectedType: selectedTransactionType)
+            
+            if let typeString = transactionViewModel.transaction?.transaction,
+               let transactionType = TransactionType(rawValue: typeString.rawValue) {
+                cell.configure(selectedType: transactionType)
+            } else {
+                cell.configure(selectedType: nil) // 기본값 처리
+            }
+
             return cell
             
         case .date, .amount, .category, .memo:
@@ -170,18 +226,28 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
             if section == .date {
                 if let selectedDate = selectedDate {
                     cell.updateDateValue(with: selectedDate)
+                } else if let modelDate = transactionViewModel.transaction?.date {
+                    cell.updateDateValue(with: modelDate)
+                } else {
+                    cell.updateDateValue(with: Date())
                 }
             } else if section == .amount {
                 if let selectedAmount = selectedAmount {
                     cell.updateAmountValue(with: selectedAmount)
+                } else if let modelAmount = transactionViewModel.transaction?.amount {
+                    cell.updateAmountValue(with: modelAmount)
                 }
             } else  if section == .memo {
                 if let selectedMemo = selectedMemo {
                     cell.updateMemoValue(with: selectedMemo)
+                } else if let modelMemo = transactionViewModel.transaction?.memo {
+                    cell.updateMemoValue(with: modelMemo)
                 }
             } else {
                 if let selectedCategory = transactionViewModel.transaction?.category {
                     cell.updateCategoryValue(with: selectedCategory)
+                } else if let modelCategory = transactionViewModel.transaction?.category {
+                    cell.updateCategoryValue(with: modelCategory)
                 }
             }
             
@@ -191,16 +257,13 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
             guard let cell = tableView.dequeueReusableCell(withIdentifier: AddImageCell.reuseIdentifier, for: indexPath) as? AddImageCell else { return UITableViewCell() }
             cell.configure(title: section.title)
             cell.delegate = self
+            if let selectedImage = transactionViewModel.transaction?.image {
+                cell.setImage(selectedImage)
+            }
             return cell
             
-        default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            cell.textLabel?.text = "TEST"
-            return cell
         }
     }
-    
-    
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let section = AddSection(rawValue: indexPath.section) else { fatalError("Invalid section") }
@@ -343,6 +406,14 @@ extension AddTransactionViewController: AddCustomCellDelegate {
 
 // MARK: - Extension: AddImageCell 내에서 selectedImage를 눌렀을 때 동작할 메서드
 extension AddTransactionViewController: AddImageCellDelegate {
+    func deleteImage(_ image: UIImage?) {
+        if image != nil {
+            transactionViewModel.transaction?.image = image
+        } else {
+            transactionViewModel.transaction?.image = nil
+        }
+    }
+    
     func didTapCameraButton(in cell: AddImageCell) {
         // 눌린 셀의 indexPath 저장
         if let indexPath = addTableView.indexPath(for: cell) {
@@ -550,3 +621,9 @@ enum AddSection: Int, CaseIterable {
     }
 }
 
+
+// MARK: - Enum: 모드 정의
+enum AddTransactionMode {
+    case create
+    case edit(id: UUID)
+}

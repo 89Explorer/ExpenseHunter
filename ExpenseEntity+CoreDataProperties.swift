@@ -48,7 +48,7 @@ extension ExpenseEntity {
         }
 
         let image: UIImage?
-        if let path = self.imagePath {
+        if let path = self.imagePath, !path.isEmpty {
             image = TransactionFileManager.shared.loadImage(from: path)
         } else {
             image = nil
