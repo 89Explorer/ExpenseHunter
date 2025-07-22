@@ -20,6 +20,7 @@ class HomeViewController: UIViewController {
     private var totalIncomeThisMonth: Int?
     private var totalExpenseThisMonth: Int?
     private var todayTransaction: [ExpenseModel]?
+    private var weeklySummaryData: [(day: String, income: Double, expense: Double)] = []
     
     
     // MARK: - UI Component
@@ -52,6 +53,9 @@ class HomeViewController: UIViewController {
                 self.totalIncomeThisMonth = self.transactionViewModel.totalAmount(type: .income, in: self.now, granularity: .month)
                 self.totalExpenseThisMonth = self.transactionViewModel.totalAmount(type: .expense, in: self.now, granularity: .month)
                 self.todayTransaction = self.transactionViewModel.filteredTransactions(in: self.now, granularity: .day)
+               
+                self.weeklySummaryData = self.transactionViewModel.weeklySummary(in: self.now)
+                
                 self.expenseTableview.reloadData()
             }
             .store(in: &cancellables)
@@ -73,11 +77,11 @@ class HomeViewController: UIViewController {
         expenseTableview.register(HomeChartCell.self, forCellReuseIdentifier: HomeChartCell.reuseIdentifier)
         expenseTableview.register(HomeTodayStatusCell.self, forCellReuseIdentifier: HomeTodayStatusCell.reuseIdentifier)
         
-        let config = UIImage.SymbolConfiguration(pointSize: 24)
+        let config = UIImage.SymbolConfiguration(pointSize: 28)
         let plusImage = UIImage(systemName: "plus", withConfiguration: config)
         floatingButton.setImage(plusImage, for: .normal)
         floatingButton.tintColor = .label
-        floatingButton.backgroundColor = .systemOrange
+        floatingButton.backgroundColor = .systemBlue
         floatingButton.layer.cornerRadius = 28
         floatingButton.layer.shadowOpacity = 0.3
         floatingButton.layer.shadowRadius = 8
@@ -107,6 +111,11 @@ class HomeViewController: UIViewController {
     @objc private func moreButtonTapped(_ sender: UIButton) {
         guard let section = HomeSection(rawValue: sender.tag) else { return }
         print("더보기 버튼 탭됨: \(section)")
+        switch section {
+        default:
+            let chartVC = DetailChartViewController()
+            navigationController?.pushViewController(chartVC, animated: true)
+        }
         
         // 예: delegate를 통해 전달하거나, 화면 전환 등
     }
@@ -292,6 +301,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         case .chart:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeChartCell.reuseIdentifier, for: indexPath) as? HomeChartCell else { return UITableViewCell() }
+            cell.configureChart(with: weeklySummaryData)
             return cell
         }
     }
@@ -307,7 +317,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 let editVC = AddTransactionViewController(mode: .edit(id: id))
                 navigationController?.pushViewController(editVC, animated: true)
             }
-            print("눌린 아이템: \(todayTransaction?[indexPath.row].category)")
         default:
             break
         }
@@ -328,7 +337,7 @@ enum HomeSection: Int, CaseIterable {
         case .income: return "📥 수입"
         case .expense: return "📤 지출"
         case .chart: return "📊 주간 수입/지출 현황"
-        case .today: return "📝 오늘 수입/지출 현황"
+        case .today: return "📝 오늘 수입/지출 내역"
         }
     }
     

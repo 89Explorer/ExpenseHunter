@@ -44,11 +44,11 @@ class HomeChartCell: UITableViewCell {
         
         containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 8
-//        containerView.layer.shadowColor = UIColor.label.cgColor
-//        containerView.layer.shadowOpacity = 0.5
-//        containerView.layer.shadowOffset = CGSize(width: 0, height: 8)
-//        containerView.layer.shadowRadius = 8
-//        containerView.layer.masksToBounds = false
+        //        containerView.layer.shadowColor = UIColor.label.cgColor
+        //        containerView.layer.shadowOpacity = 0.5
+        //        containerView.layer.shadowOffset = CGSize(width: 0, height: 8)
+        //        containerView.layer.shadowRadius = 8
+        //        containerView.layer.masksToBounds = false
         
         containerView.translatesAutoresizingMaskIntoConstraints = false
         weekBarChart.translatesAutoresizingMaskIntoConstraints = false
@@ -120,19 +120,55 @@ class HomeChartCell: UITableViewCell {
         weekBarChart.doubleTapToZoomEnabled = false // 더블탭 확대 비활성화
         weekBarChart.scaleXEnabled = false         // X축 방향 스케일(줌) 비활성화
         weekBarChart.scaleYEnabled = false         // Y축 방향 스케일(줌) 비활성화
-
+        
         // 드래그, 스크롤 비활성화
         weekBarChart.dragEnabled = false
         weekBarChart.highlightPerTapEnabled = false
         weekBarChart.highlightPerDragEnabled = false
         weekBarChart.legend.enabled = true
-
+        
         
         // 그룹 바의 X축 범위 및 그룹 설정
         weekBarChart.xAxis.axisMinimum = 0
         let groupWidth = data.groupWidth(groupSpace: groupSpace, barSpace: barSpace)     // 전체 그룹 하나의 폭 계산
         weekBarChart.xAxis.axisMaximum = 0 + groupWidth * Double(days.count)
         weekBarChart.groupBars(fromX: 0, groupSpace: groupSpace, barSpace: barSpace)
+    }
+    
+    
+    func configureChart(with weeklyData: [(day: String, income: Double, expense: Double)]) {
+        let days = weeklyData.map { $0.day }
+        let incomeValues = weeklyData.map { $0.income }
+        let expenseValues = weeklyData.map { $0.expense }
+        
+        var incomeEntries: [BarChartDataEntry] = []
+        var expenseEntries: [BarChartDataEntry] = []
+        
+        for i in 0..<days.count {
+            incomeEntries.append(BarChartDataEntry(x: Double(i), y: incomeValues[i]))
+            expenseEntries.append(BarChartDataEntry(x: Double(i), y: expenseValues[i]))
+        }
+        
+        let incomeDataSet = BarChartDataSet(entries: incomeEntries, label: "수입")
+        incomeDataSet.setColor(.systemGreen)
+        
+        let expenseDataSet = BarChartDataSet(entries: expenseEntries, label: "수출")
+        expenseDataSet.setColor(.systemRed)
+        
+        let data = BarChartData(dataSets: [incomeDataSet, expenseDataSet])
+        data.barWidth = 0.35
+        let groupSpace: CGFloat = 0.2
+        let barSpace: CGFloat = 0.05
+        
+        weekBarChart.data = data
+        weekBarChart.xAxis.valueFormatter = IndexAxisValueFormatter(values: days)
+        weekBarChart.xAxis.axisMinimum = 0
+        let groupWidth = data.groupWidth(groupSpace: groupSpace, barSpace: barSpace)
+        weekBarChart.xAxis.axisMaximum = 0 + groupWidth * Double(days.count)
+        weekBarChart.groupBars(fromX: 0, groupSpace: groupSpace, barSpace: barSpace)
+        
+        weekBarChart.notifyDataSetChanged()
+        
     }
 }
 

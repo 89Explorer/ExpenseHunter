@@ -175,21 +175,21 @@ final class TransactionViewModel {
             .store(in: &cancellables)
     }
     
-//    func updateTransaction(_ updatedTransaction: ExpenseModel) {
-//        transactionManager.updateTransaction(updatedTransaction)
-//            .receive(on: DispatchQueue.main)
-//            .sink(receiveCompletion: { [weak self] completion in
-//                switch completion {
-//                case .finished:
-//                    break
-//                case .failure(let error):
-//                    self?.errorMessage = error.localizedDescription
-//                }
-//            }, receiveValue: { [weak self] updated in
-//                self?.transaction = updated
-//            })
-//            .store(in: &cancellables)
-//    }
+    //    func updateTransaction(_ updatedTransaction: ExpenseModel) {
+    //        transactionManager.updateTransaction(updatedTransaction)
+    //            .receive(on: DispatchQueue.main)
+    //            .sink(receiveCompletion: { [weak self] completion in
+    //                switch completion {
+    //                case .finished:
+    //                    break
+    //                case .failure(let error):
+    //                    self?.errorMessage = error.localizedDescription
+    //                }
+    //            }, receiveValue: { [weak self] updated in
+    //                self?.transaction = updated
+    //            })
+    //            .store(in: &cancellables)
+    //    }
     
     
     
@@ -258,6 +258,32 @@ final class TransactionViewModel {
     }
     
     
+    // 주어진 날자 기준으로 주간 데이터 반환 (월 ~ 일)
+    func weeklySummary(in baseDate: Date) -> [(day: String, income: Double, expense: Double)] {
+        let calendar = Calendar.current
+        let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: baseDate))!
+        
+        var result: [(String, Double, Double)] = []
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE"
+        
+        for i in 0..<7 {
+            guard let day = calendar.date(byAdding: .day, value: i, to: startOfWeek) else { continue }
+            
+            let incomeForDay = transactions.filter {
+                $0.transaction == .income && calendar.isDate($0.date, inSameDayAs: day)
+            }.map { Double($0.amount) }.reduce(0, +)
+            
+            let expenseForDay = transactions.filter {
+                $0.transaction == .expense && calendar.isDate($0.date, inSameDayAs: day)
+            }.map { Double($0.amount) }.reduce(0, +)
+            
+            result.append((formatter.string(from: day), incomeForDay, expenseForDay))
+        }
+        return result
+    }
+    
+    
     // 누적 금액 계산
     func totalAmount(
         type: TransactionType,
@@ -268,7 +294,7 @@ final class TransactionViewModel {
         }
     
     
-    // 유효성 검사 메서드 
+    // 유효성 검사 메서드
     func validateTransaction() -> Bool {
         guard let transaction = transaction else {
             errorMessage = "내역 정보가 없습니다."
