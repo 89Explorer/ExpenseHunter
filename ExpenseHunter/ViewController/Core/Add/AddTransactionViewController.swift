@@ -63,6 +63,7 @@ class AddTransactionViewController: UIViewController {
         checkPhotoLibraryPermission()
         self.updateTitle()
         bindViewModel()
+        configureNavigationBar()
     }
     
     
@@ -75,6 +76,18 @@ class AddTransactionViewController: UIViewController {
                 self.addTableView.reloadData()
             }
             .store(in: &cancellables)
+    }
+    
+    private func configureNavigationBar() {
+        // 공통 네비게이션 바 설정
+        switch mode {
+        case .create:
+            navigationItem.rightBarButtonItem = nil
+        case .edit(id: _):
+            let deleteButton = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteButtonTapped))
+            deleteButton.tintColor = .systemRed
+            navigationItem.rightBarButtonItem = deleteButton
+        }
     }
     
     
@@ -145,6 +158,25 @@ class AddTransactionViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "확인", style: .default))
         present(alert, animated: true)
     }
+    
+    // 삭제 경고창 메서드
+    private func showDeleteConfirmationAlert() {
+        let alert = UIAlertController(title: "내역 삭제", message: "지금 보고 계신 내역을 삭제하시겠습니까?", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            
+            if case let .edit(id) = self.mode {
+                self.transactionViewModel.deleteTransaction(by: id)
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
+        
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+        present(alert, animated: true, completion: nil)
+        
+    }
 
     
     // MARK: - ActionMethod
@@ -164,6 +196,12 @@ class AddTransactionViewController: UIViewController {
         }
         
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func deleteButtonTapped() {
+        // 삭제 로직을 구현
+        print("삭제 시작!")
+        showDeleteConfirmationAlert()
     }
 }
 
