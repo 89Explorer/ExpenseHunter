@@ -67,7 +67,7 @@ class HomeTodayStatusCell: UITableViewCell {
         memoImageView.backgroundColor = UIColor.systemGray6
         memoImageView.layer.cornerRadius = 12
         memoImageView.clipsToBounds = true
-        memoImageView.isHidden = false
+        memoImageView.isHidden = true
         
         photoImageView.image = UIImage(systemName: "photo.circle")
         photoImageView.tintColor = .label
@@ -75,7 +75,7 @@ class HomeTodayStatusCell: UITableViewCell {
         photoImageView.backgroundColor = UIColor.systemGray6
         photoImageView.layer.cornerRadius = 12
         photoImageView.clipsToBounds = true
-        photoImageView.isHidden = false
+        photoImageView.isHidden = true
         
         amountLabel.text = "- ₩ 160,000"
         amountLabel.font = UIFont(name: "OTSBAggroL", size: 16)
@@ -131,6 +131,7 @@ class HomeTodayStatusCell: UITableViewCell {
         ])
     }
     
+    
     func configure(with data: ExpenseModel) {
         let category = data.category
         categoryLabel.text = category
@@ -157,8 +158,41 @@ class HomeTodayStatusCell: UITableViewCell {
             amountLabel.text = "- ₩ \(formattedAmount ?? "0") 원"
         }
 
+        memoImageView.isHidden = false
         memoImageView.tintColor = ((data.memo?.count) == 0) ? UIColor.secondaryLabel : UIColor.label
+        
+        photoImageView.isHidden = false
         photoImageView.tintColor = (data.image == nil) ? UIColor.secondaryLabel : UIColor.label
+        
+    }
+    
+    
+    func configureChart(with data: (category: String, amount: Double), type: TransactionType) {
+        
+        let category = data.category
+        categoryLabel.text = category
+    
+        if let systemName = type.categoryImageMap[category] {
+            statusImageView.image = UIImage(systemName: systemName)
+        }
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        formatter.locale = Locale(identifier: "ko")
+        
+        let amount = data.amount
+        let formattedAmount = formatter.string(from: NSNumber(value: amount))
+        
+        if type == .income {
+            //containerView.backgroundColor = .systemGreen.withAlphaComponent(0.1)
+            amountLabel.textColor = .systemGreen
+            amountLabel.text = "+ ₩ \(formattedAmount ?? "0") 원"
+        } else if type == .expense {
+            //containerView.backgroundColor = .systemRed.withAlphaComponent(0.1)
+            amountLabel.textColor = .systemRed
+            amountLabel.text = "- ₩ \(formattedAmount ?? "0") 원"
+        }
         
     }
 }

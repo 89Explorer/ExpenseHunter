@@ -342,7 +342,7 @@ enum HomeSection: Int, CaseIterable {
         switch self {
         case .income: return "📥 수입"
         case .expense: return "📤 지출"
-        case .chart: return "📊 일별 수입/지출 현황"
+        case .chart: return "📊 이번주 수입/지출 현황"
         case .today: return "📝 오늘 수입/지출 내역"
         }
     }

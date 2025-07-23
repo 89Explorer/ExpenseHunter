@@ -106,6 +106,7 @@ class DetailChartViewController: UIViewController {
         chartTableView.dataSource = self
         
         chartTableView.register(DetailChartCell.self, forCellReuseIdentifier: DetailChartCell.reuseIdentifier)
+        chartTableView.register(HomeTodayStatusCell.self, forCellReuseIdentifier: HomeTodayStatusCell.reuseIdentifier)
         
         view.addSubview(chartTableView)
         chartTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -128,7 +129,13 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        guard let section = ChartTable(rawValue: section) else { fatalError("numberOfRowsInSection Error") }
+        switch section {
+        case .chart:
+            return 1
+        case .detail:
+            return filteredData.count
+        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -165,12 +172,22 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             cell.configureChart(with: filteredData, usePercentage: true)
             return cell
         case .detail:
-            return UITableViewCell()
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTodayStatusCell.reuseIdentifier, for: indexPath) as? HomeTodayStatusCell else { return UITableViewCell() }
+            let sortedData = filteredData.sorted { $0.amount > $1.amount }
+            let item = sortedData[indexPath.row]
+            cell.configureChart(with: item, type: transactionType)
+            return cell
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 350
+        guard let section = ChartTable(rawValue: indexPath.section) else { fatalError("Invalid section") }
+        switch section {
+        case .chart:
+            return 350
+        case .detail:
+            return 68
+        }
     }
 }
 
