@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import DGCharts
 
 
 class BasePaddingLabel: UILabel {
@@ -37,5 +38,40 @@ func checkFont() {
         for name in UIFont.fontNames(forFamilyName: family) {
             print("    Font Name: \(name)")
         }
+    }
+}
+
+/*
+ PieChartData에서 기본적으로 Double 값을 String으로 변환해 표시
+ 이걸 원하는 형식(예: ₩ 25,000,000 원)으로 표시하려면 PieChartData의 값 포맷터(ValueFormatter)를 커스텀
+ */
+class CurrencyValueFormatter: NSObject, ValueFormatter {
+
+    private let formatter: NumberFormatter
+
+    override init() {
+        self.formatter = NumberFormatter()
+        self.formatter.numberStyle = .decimal
+        self.formatter.groupingSeparator = ","
+        self.formatter.maximumFractionDigits = 0
+        super.init()
+    }
+
+    // ✅ DGCharts에서는 이 메서드를 구현해야 함
+    func stringForValue(_ value: Double,
+                        entry: ChartDataEntry,
+                        dataSetIndex: Int,
+                        viewPortHandler: ViewPortHandler?) -> String {
+        return "₩ \(formatter.string(from: NSNumber(value: value)) ?? "0") 원"
+    }
+}
+
+// 퍼센트 포맷터를 구현한 클래스
+class PercentageValueFormatter: NSObject, ValueFormatter {
+    func stringForValue(_ value: Double,
+                        entry: ChartDataEntry,
+                        dataSetIndex: Int,
+                        viewPortHandler: ViewPortHandler?) -> String {
+        return String(format: "%.1f%%", value)
     }
 }

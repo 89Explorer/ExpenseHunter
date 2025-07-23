@@ -53,7 +53,7 @@ class HomeViewController: UIViewController {
                 self.totalIncomeThisMonth = self.transactionViewModel.totalAmount(type: .income, in: self.now, granularity: .month)
                 self.totalExpenseThisMonth = self.transactionViewModel.totalAmount(type: .expense, in: self.now, granularity: .month)
                 self.todayTransaction = self.transactionViewModel.filteredTransactions(in: self.now, granularity: .day)
-               
+                
                 self.weeklySummaryData = self.transactionViewModel.weeklySummary(in: self.now)
                 
                 self.expenseTableview.reloadData()
@@ -105,15 +105,21 @@ class HomeViewController: UIViewController {
             floatingButton.heightAnchor.constraint(equalToConstant: 56)
         ])
     }
-
+    
     
     // MARK - Action Method
     @objc private func moreButtonTapped(_ sender: UIButton) {
         guard let section = HomeSection(rawValue: sender.tag) else { return }
         print("더보기 버튼 탭됨: \(section)")
         switch section {
+        case .income:
+            let chartVC = DetailChartViewController(type: .income)
+            navigationController?.pushViewController(chartVC, animated: true)
+        case .expense:
+            let chartVC = DetailChartViewController(type: .expense)
+            navigationController?.pushViewController(chartVC, animated: true)
         default:
-            let chartVC = DetailChartViewController()
+            let chartVC = DetailChartViewController(type: .expense)
             navigationController?.pushViewController(chartVC, animated: true)
         }
         
@@ -336,7 +342,7 @@ enum HomeSection: Int, CaseIterable {
         switch self {
         case .income: return "📥 수입"
         case .expense: return "📤 지출"
-        case .chart: return "📊 주간 수입/지출 현황"
+        case .chart: return "📊 일별 수입/지출 현황"
         case .today: return "📝 오늘 수입/지출 내역"
         }
     }
@@ -350,3 +356,4 @@ enum HomeSection: Int, CaseIterable {
         }
     }
 }
+
