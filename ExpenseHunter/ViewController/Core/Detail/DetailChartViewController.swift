@@ -28,7 +28,7 @@ class DetailChartViewController: UIViewController {
     
     
     // MARK: - UI Component
-    private let chartTableView: UITableView = UITableView(frame: .zero, style: .insetGrouped)
+    private let chartTableView: UITableView = UITableView(frame: .zero, style: .grouped)
     
     
     

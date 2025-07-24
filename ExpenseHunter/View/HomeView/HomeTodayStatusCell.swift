@@ -39,7 +39,7 @@ class HomeTodayStatusCell: UITableViewCell {
     
     // MARK: - UI Component
     private func configureUI() {
-        contentView.backgroundColor = .clear
+        backgroundColor = .clear
         
         containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 8

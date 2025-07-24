@@ -68,6 +68,7 @@ class HomeViewController: UIViewController {
         
         expenseTableview.rowHeight =  UITableView.automaticDimension
         expenseTableview.estimatedRowHeight = 150
+        expenseTableview.separatorStyle = .none
         
         expenseTableview.delegate = self
         expenseTableview.dataSource = self
@@ -118,6 +119,9 @@ class HomeViewController: UIViewController {
         case .expense:
             let chartVC = DetailChartViewController(type: .expense)
             navigationController?.pushViewController(chartVC, animated: true)
+        case .chart:
+            let calendarVC = DetailCalendarViewController()
+            navigationController?.pushViewController(calendarVC, animated: true)
         default:
             let chartVC = DetailChartViewController(type: .expense)
             navigationController?.pushViewController(chartVC, animated: true)
@@ -169,14 +173,14 @@ extension HomeViewController {
         
         // "오늘, "
         let todayAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "OTSBAggroB", size: 24),
+            .font: UIFont(name: "OTSBAggroB", size: 24) ?? UIFont.systemFont(ofSize: 20, weight: .bold),
             .foregroundColor: UIColor.label
         ]
         attributedString.append(NSAttributedString(string: todayText, attributes: todayAttributes))
         
         // "7월 11일"
         let dateAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "OTSBAggroL", size: 20),
+            .font: UIFont(name: "OTSBAggroL", size: 20) ?? UIFont.systemFont(ofSize: 20, weight: .bold),
             .foregroundColor: UIColor.secondaryLabel
         ]
         attributedString.append(NSAttributedString(string: dateText, attributes: dateAttributes))
@@ -292,10 +296,12 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case .income:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeExpenseCell.reuseIdentifier, for: indexPath) as? HomeExpenseCell else { return UITableViewCell() }
+            cell.selectionStyle = .none
             cell.configure(with: "이번달, 누적 수입", amount: totalIncomeThisMonth ?? 0, type: .income)
             return cell
         case .expense:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeExpenseCell.reuseIdentifier, for: indexPath) as? HomeExpenseCell else { return UITableViewCell() }
+            cell.selectionStyle = .none
             cell.configure(with: "이번달, 누적 지출", amount: totalExpenseThisMonth ?? 0, type: .expense)
             return cell
         case .today:
@@ -307,6 +313,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         case .chart:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeChartCell.reuseIdentifier, for: indexPath) as? HomeChartCell else { return UITableViewCell() }
+            cell.selectionStyle = .none
             cell.configureChart(with: weeklySummaryData)
             return cell
         }
@@ -328,7 +335,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
 }
-
 
 
 // MARK: - Enum: 홈 테이블 섹션 관리
