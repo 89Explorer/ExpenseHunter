@@ -154,7 +154,7 @@
 				DEVELOPMENT_TEAM = P9NXT375QP;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ExpenseHunter/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ExpenseHunter;
+				INFOPLIST_KEY_CFBundleDisplayName = "한눈가계부";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -187,7 +187,7 @@
 				DEVELOPMENT_TEAM = P9NXT375QP;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ExpenseHunter/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ExpenseHunter;
+				INFOPLIST_KEY_CFBundleDisplayName = "한눈가계부";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

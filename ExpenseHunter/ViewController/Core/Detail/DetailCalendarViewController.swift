@@ -29,6 +29,7 @@ class DetailCalendarViewController: UIViewController {
         configureUI()
         transactionViewModel.readAllTransactions()
         bindViewModel()
+        configureNavigaiton()
     }
     
     
@@ -82,7 +83,6 @@ class DetailCalendarViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-    
 }
 
 
@@ -163,6 +163,23 @@ extension DetailCalendarViewController: DetailCalendarCellDelegate {
     func calendarCellDidSelectDate(_ date: Date) {
         self.selectedDate = date
         applyFilter()
+    }
+}
+
+
+// MARK: - Extension: 네비게이션
+extension DetailCalendarViewController {
+    
+    // 네비게이션 타이틀 설정
+    private func configureNavigaiton() {
+        let titleLabel: UILabel = UILabel()
+        titleLabel.textColor = .label
+        titleLabel.textAlignment = .center
+        titleLabel.text = "🗒️ 일별 수입/지출 내역"
+        titleLabel.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
+        titleLabel.sizeToFit()
+        
+        self.navigationItem.titleView = titleLabel
     }
 }
 

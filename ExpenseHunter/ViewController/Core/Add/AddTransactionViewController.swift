@@ -60,9 +60,9 @@ class AddTransactionViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .secondarySystemBackground
         configureUI()
-        checkPhotoLibraryPermission()
         self.updateTitle()
         bindViewModel()
+        //checkPhotoLibraryPermission()
         configureNavigationBar()
     }
     
