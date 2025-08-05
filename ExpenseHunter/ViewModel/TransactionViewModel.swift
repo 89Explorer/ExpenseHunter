@@ -76,8 +76,6 @@ final class TransactionViewModel {
     
     
     // MARK: - Function
-    
-    
     // Create
     func createTransaction() {
         guard let transaction = transaction else {
@@ -238,6 +236,7 @@ final class TransactionViewModel {
     //            return calendar.isDate(transaction.date, equalTo: date, toGranularity: granularity)
     //        }
     //    }
+    
     
     // 특정 타입, 날짜를 통해 필터된 배열을 구하는 메서드
     func filteredTransactions(

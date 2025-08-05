@@ -658,10 +658,3 @@ enum AddSection: Int, CaseIterable {
         }
     }
 }
-
-
-// MARK: - Enum: 모드 정의
-enum AddTransactionMode {
-    case create
-    case edit(id: UUID)
-}

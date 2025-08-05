@@ -16,6 +16,7 @@ class HomeViewController: UIViewController {
     // MARK: - Variable
     private let transactionViewModel = TransactionViewModel()
     private var cancellables = Set<AnyCancellable>()
+    
     private let now = Date()
     private var totalIncomeThisMonth: Int?
     private var totalExpenseThisMonth: Int?
@@ -28,13 +29,12 @@ class HomeViewController: UIViewController {
     private var floatingButton: UIButton = UIButton(type: .custom)
     
     
-    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .secondarySystemBackground
         //configureNavigation()
-        transactionViewModel.readAllTransactions()
+        //transactionViewModel.readAllTransactions()
         configureUI()
         bindViewModel()
     }

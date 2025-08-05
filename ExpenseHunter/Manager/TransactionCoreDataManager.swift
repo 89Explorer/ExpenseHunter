@@ -218,56 +218,6 @@ final class TransactionCoreDataManager {
                 entity.date = updatedTransaction.date
                 entity.category = updatedTransaction.category
                 entity.memo = updatedTransaction.memo
-
-//                if let newImage = updatedTransaction.image {
-//                    // 새 이미지가 있을 경우 기존 이미지 제거 후 새 이미지 저장
-//                    if let oldPath = entity.imagePath {
-//                        let deleted = self.storageManager.deleteFolder(for: oldPath)
-//                        if !deleted {
-//                            print("⚠️ 기존 이미지 삭제 실패: \(oldPath)")
-//                            promise(.failure(NSError(domain: "ImageDeleteFailed", code: 501)))
-//                            return
-//                        }
-//                    }
-//
-//                    if let newPath = self.storageManager.saveImage(newImage, updatedTransaction.id.uuidString) {
-//                        entity.imagePath = newPath
-//                    } else {
-//                        print("❌ 새 이미지 저장 실패")
-//                        promise(.failure(NSError(domain: "ImageSaveFailed", code: 500)))
-//                        return
-//                    }
-//                } else {
-//                    // 새 이미지가 없을 경우 (= 변경하지 않음)
-//                    // 👉 아무 작업도 하지 않음 (기존 이미지 그대로 유지)
-//                    print("ℹ️ 이미지 변경 없음")
-//                }
-
-//                if let newImage = updatedTransaction.image {
-//                    if let oldPath = entity.imagePath, !oldPath.isEmpty {
-//                        // 기존 이미지 경로가 존재하면 삭제 시도
-//                        let deleted = self.storageManager.deleteFolder(for: oldPath)
-//                        if !deleted {
-//                            print("⚠️ 기존 이미지 삭제 실패: \(oldPath)")
-//                            // 삭제 실패하더라도, 이미지 저장은 시도할 수 있음
-//                            // 실패를 무시하고 계속 진행하려면 주석 처리:
-//                            // promise(.failure(NSError(domain: "ImageDeleteFailed", code: 501)))
-//                            // return
-//                        }
-//                    }
-//
-//                    // 새 이미지 저장
-//                    if let newPath = self.storageManager.saveImage(newImage, updatedTransaction.id.uuidString) {
-//                        entity.imagePath = newPath
-//                    } else {
-//                        print("❌ 새 이미지 저장 실패")
-//                        promise(.failure(NSError(domain: "ImageSaveFailed", code: 500)))
-//                        return
-//                    }
-//                } else {
-//                    // 새 이미지가 없을 경우 = 기존 이미지 유지
-//                    print("ℹ️ 이미지 변경 없음")
-//                }
                 
                 if let newImage = updatedTransaction.image {
                     // 기존 이미지 제거
