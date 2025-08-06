@@ -17,19 +17,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash" translatesAutoresizingMaskIntoConstraints="NO" id="N9w-1h-ogd">
-                                <rect key="frame" x="106.66666666666669" y="336" width="180" height="180"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="launch" translatesAutoresizingMaskIntoConstraints="NO" id="FCg-5C-Vnp">
+                                <rect key="frame" x="16.666666666666657" y="246" width="360" height="360"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="180" id="CZB-4v-pck"/>
-                                    <constraint firstAttribute="width" constant="180" id="Rbp-7D-Svx"/>
+                                    <constraint firstAttribute="width" constant="360" id="QXz-pX-BUv"/>
+                                    <constraint firstAttribute="height" constant="360" id="hk4-no-8cJ"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="og0-9J-9ra"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="N9w-1h-ogd" firstAttribute="centerX" secondItem="u29-CR-hIP" secondAttribute="centerX" id="4Dc-Ek-vWL"/>
-                            <constraint firstItem="N9w-1h-ogd" firstAttribute="centerY" secondItem="u29-CR-hIP" secondAttribute="centerY" id="ED0-5V-Pkj"/>
+                            <constraint firstItem="FCg-5C-Vnp" firstAttribute="centerX" secondItem="u29-CR-hIP" secondAttribute="centerX" id="ge8-Kf-2Np"/>
+                            <constraint firstItem="FCg-5C-Vnp" firstAttribute="centerY" secondItem="u29-CR-hIP" secondAttribute="centerY" id="x4V-8w-2GY"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -39,7 +39,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="splash" width="60" height="60"/>
+        <image name="launch" width="471.33334350585938" height="666.66668701171875"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
