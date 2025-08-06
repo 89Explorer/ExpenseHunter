@@ -16,13 +16,8 @@ class HomeViewController: UIViewController {
     // MARK: - Variable
     private let transactionViewModel = TransactionViewModel()
     private var cancellables = Set<AnyCancellable>()
-    
     private let now = Date()
-    private var totalIncomeThisMonth: Int?
-    private var totalExpenseThisMonth: Int?
-    private var todayTransaction: [ExpenseModel]?
-    private var weeklySummaryData: [(day: String, income: Double, expense: Double)] = []
-    
+
     
     // MARK: - UI Component
     private var expenseTableview: UITableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -33,8 +28,6 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .secondarySystemBackground
-        //configureNavigation()
-        //transactionViewModel.readAllTransactions()
         configureUI()
         bindViewModel()
     }
@@ -42,6 +35,7 @@ class HomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         transactionViewModel.readAllTransactions()
+        transactionViewModel.setAllTransactions()
         configureNavigation()
     }
     
@@ -50,15 +44,12 @@ class HomeViewController: UIViewController {
     private func bindViewModel() {
         transactionViewModel.$transactions
             .receive(on: RunLoop.main)
-            .sink { [weak self] transactions in
+            .sink { [weak self] _ in
+                
                 guard let self else { return }
-                self.totalIncomeThisMonth = self.transactionViewModel.totalAmount(type: .income, in: self.now, granularity: .month)
-                self.totalExpenseThisMonth = self.transactionViewModel.totalAmount(type: .expense, in: self.now, granularity: .month)
-                self.todayTransaction = self.transactionViewModel.filteredTransactions(in: self.now, granularity: .day)
-                
-                self.weeklySummaryData = self.transactionViewModel.weeklySummary(in: self.now)
-                
+
                 self.expenseTableview.reloadData()
+                
             }
             .store(in: &cancellables)
     }
@@ -208,14 +199,16 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         guard let section = HomeSection(rawValue: section) else { return 1 }
+        
         switch section {
+            
         case .today:
-            if let count = todayTransaction?.count {
-                return count
-            } else {
-                return 1
-            }
+            
+            let count = transactionViewModel.todayTransactions.count
+            return count
+            
         default:
             return 1
         }
@@ -241,7 +234,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         ])
         
         switch section {
+            
         case .income, .expense, .chart:
+            
             let moreButton = UIButton(configuration: {
                 var config = UIButton.Configuration.filled()
                 config.title = "더보기"
@@ -268,9 +263,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 moreButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
                 moreButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
             ])
+            
         case .today:
             break
         }
+        
         return headerView
         
     }
@@ -296,27 +293,37 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         guard let section = HomeSection(rawValue: indexPath.section) else { fatalError("Invalid section") }
         
         switch section {
-        case .income:
+            
+        case .income, .expense:
+            
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeExpenseCell.reuseIdentifier, for: indexPath) as? HomeExpenseCell else { return UITableViewCell() }
+            
             cell.selectionStyle = .none
-            cell.configure(with: "이번달, 누적 수입", amount: totalIncomeThisMonth ?? 0, type: .income)
+            let amount = section == .income ? transactionViewModel.totalIncomeThisMonth : transactionViewModel.totalExpenseThisMonth
+            let type: TransactionType = section == .income ? .income : .expense
+            let title = section == .income ? "이번달, 누적 수입" : "이번달, 누적 지출"
+            cell.configure(with: title, amount: amount, type: type)
+            
             return cell
-        case .expense:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeExpenseCell.reuseIdentifier, for: indexPath) as? HomeExpenseCell else { return UITableViewCell() }
-            cell.selectionStyle = .none
-            cell.configure(with: "이번달, 누적 지출", amount: totalExpenseThisMonth ?? 0, type: .expense)
-            return cell
+            
         case .today:
+            
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTodayStatusCell.reuseIdentifier, for: indexPath) as? HomeTodayStatusCell else { return UITableViewCell() }
+            
             cell.selectionStyle = .none
-            if let item = todayTransaction?[indexPath.row] {
-                cell.configure(with: item)
-            }
+            let item = transactionViewModel.todayTransactions[indexPath.row]
+            cell.configure(with: item)
+            
             return cell
+            
         case .chart:
+            
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeChartCell.reuseIdentifier, for: indexPath) as? HomeChartCell else { return UITableViewCell() }
+            
             cell.selectionStyle = .none
-            cell.configureChart(with: weeklySummaryData)
+            let weeklyData = transactionViewModel.weeklySummaryData
+            cell.configureChart(with: weeklyData)
+            
             return cell
         }
     }
@@ -328,10 +335,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         
         switch section {
         case .today:
-            if let id = todayTransaction?[indexPath.row].id {
-                let editVC = AddTransactionViewController(mode: .edit(id: id))
-                navigationController?.pushViewController(editVC, animated: true)
-            }
+            let id = transactionViewModel.todayTransactions[indexPath.row].id
+            let editVC = AddTransactionViewController(mode: .edit(id: id))
+            navigationController?.pushViewController(editVC, animated: true)
         default:
             break
         }

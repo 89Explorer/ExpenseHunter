@@ -13,10 +13,15 @@ import Combine
 final class TransactionViewModel {
     
     
-    // MARK: - Variable
+    // MARK: - Published Properties
     @Published var transaction: ExpenseModel?
     @Published var transactions: [ExpenseModel] = []
     @Published var errorMessage: String?
+    
+    @Published private(set) var todayTransactions: [ExpenseModel] = []
+    @Published private(set) var totalIncomeThisMonth: Int = 0
+    @Published private(set) var totalExpenseThisMonth: Int = 0
+    @Published private(set) var weeklySummaryData: [(day: String, income: Double, expense: Double)] = []
     
     var currentCategories: [String] {
         transaction?.transaction.categoryOptions ?? []
@@ -57,25 +62,17 @@ final class TransactionViewModel {
         }
     }
     
-    //    init(transaction: ExpenseModel? = nil) {
-    //        if let transaction = transaction {
-    //            self.transaction = transaction  // 수정 모드 (기존 모델)
-    //        } else {
-    //            self.transaction = ExpenseModel( // 새로 생성
-    //                id: UUID(),
-    //                transaction: .expense,
-    //                category: "",
-    //                amount: 0,
-    //                image: nil,
-    //                date: Date(),
-    //                memo: ""
-    //            )
-    //
-    //        }
-    //    }
-    
     
     // MARK: - Function
+    
+    func setAllTransactions() {
+        todayTransactions = filteredTransactions(in: Date(), granularity: .day)
+        totalIncomeThisMonth = totalAmount(type: .income, in: Date(), granularity: .month)
+        totalExpenseThisMonth = totalAmount(type: .expense, in: Date(), granularity: .month)
+        weeklySummaryData = weeklySummary(in: Date())
+    }
+    
+    
     // Create
     func createTransaction() {
         guard let transaction = transaction else {
@@ -188,7 +185,6 @@ final class TransactionViewModel {
     //            })
     //            .store(in: &cancellables)
     //    }
-    
     
     
     // Delete
