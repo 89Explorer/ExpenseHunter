@@ -19,17 +19,8 @@ class DetailChartViewController: UIViewController {
     private var filteredData: [(category: String, amount: Double)] = []
     
     
-    let dummyData = [
-        (category: "식비", amount: 150000.0),
-        (category: "교통", amount: 60000.0),
-        (category: "문화생활", amount: 40000.0),
-        (category: "쇼핑", amount: 100000.0)
-    ]
-    
-    
     // MARK: - UI Component
     private let chartTableView: UITableView = UITableView(frame: .zero, style: .grouped)
-    
     
     
     // MARK: - init
@@ -41,7 +32,6 @@ class DetailChartViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
     
     // MARK: - Life Cycle

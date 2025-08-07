@@ -29,7 +29,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .secondarySystemBackground
         configureUI()
-        bindViewModel()
+//        bindViewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -37,6 +37,7 @@ class HomeViewController: UIViewController {
         transactionViewModel.readAllTransactions()
         transactionViewModel.setAllTransactions()
         transactionViewModel.checkAndGenerateRepeatedTransactionsIfNeeded()
+        bindViewModel()
         configureNavigation()
     }
     

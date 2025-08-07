@@ -27,11 +27,16 @@ class DetailCalendarViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        transactionViewModel.readAllTransactions()
-        bindViewModel()
+//        transactionViewModel.readAllTransactions()
+//        bindViewModel()
         configureNavigaiton()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        transactionViewModel.readAllTransactions()
+        bindViewModel()
+    }
     
     // MARK: - Function
     private func bindViewModel() {
@@ -118,6 +123,19 @@ extension DetailCalendarViewController: UITableViewDelegate, UITableViewDataSour
             cell.configure(with: item)
             cell.selectionStyle = .none
             return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let section = DetailCalendar(rawValue: indexPath.section) else { return }
+        switch section {
+        case .calendar:
+            break
+        case .detailTable:
+            let selectedItem = filteredTransactions[indexPath.row]
+            let editVC = AddTransactionViewController(mode: .edit(id: selectedItem.id))
+            navigationController?.pushViewController(editVC, animated: true)
+            
         }
     }
     
