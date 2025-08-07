@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  ExpenseHunter
+
+  Created by 권정근 on 8/7/25.
+  
+*/
+
+
+CFBundleDisplayName = "한눈가계부";

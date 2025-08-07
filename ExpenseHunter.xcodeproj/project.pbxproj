@@ -9,12 +9,15 @@
 /* Begin PBXBuildFile section */
 		A12C8D2A2E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12C8D292E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift */; };
 		A12C8D2B2E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12C8D282E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift */; };
+		A13D39D02E4474780082F215 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A13D39CE2E4474780082F215 /* InfoPlist.strings */; };
 		A1E343322E2594A2007FF1D0 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = A1E343312E2594A2007FF1D0 /* DGCharts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A12C8D282E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExpenseEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		A12C8D292E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExpenseEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A13D39D22E4477FF0082F215 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A13D39D52E4478A30082F215 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A1E3430C2E244A04007FF1D0 /* ExpenseHunter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpenseHunter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -54,6 +57,7 @@
 		A1D188462E20247A0085F8A5 = {
 			isa = PBXGroup;
 			children = (
+				A13D39CE2E4474780082F215 /* InfoPlist.strings */,
 				A12C8D282E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift */,
 				A12C8D292E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift */,
 				A1D188512E20247A0085F8A5 /* ExpenseHunter */,
@@ -105,6 +109,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ko,
 			);
 			mainGroup = A1D188462E20247A0085F8A5;
 			minimizedProjectReferenceProxies = 1;
@@ -126,6 +131,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A13D39D02E4474780082F215 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,6 +148,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A13D39CE2E4474780082F215 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A13D39D22E4477FF0082F215 /* ko */,
+				A13D39D52E4478A30082F215 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		A1D188662E20247C0085F8A5 /* Debug */ = {
@@ -223,6 +241,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -278,6 +297,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -287,6 +307,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -335,6 +356,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
