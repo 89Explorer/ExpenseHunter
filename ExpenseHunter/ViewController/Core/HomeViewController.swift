@@ -36,6 +36,7 @@ class HomeViewController: UIViewController {
         super.viewWillAppear(animated)
         transactionViewModel.readAllTransactions()
         transactionViewModel.setAllTransactions()
+        transactionViewModel.checkAndGenerateRepeatedTransactionsIfNeeded()
         configureNavigation()
     }
     

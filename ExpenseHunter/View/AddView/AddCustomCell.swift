@@ -141,6 +141,10 @@ extension AddCustomCell {
         valueLabel.text = category
     }
     
+    func updateRepeatValue(with repeatType: String) {
+        valueLabel.text = repeatType
+    }
+    
 }
 
 

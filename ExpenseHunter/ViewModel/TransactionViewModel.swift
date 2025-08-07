@@ -65,6 +65,7 @@ final class TransactionViewModel {
     
     // MARK: - Function
     
+    // 각 Published Properties에 값을 전달
     func setAllTransactions() {
         todayTransactions = filteredTransactions(in: Date(), granularity: .day)
         totalIncomeThisMonth = totalAmount(type: .income, in: Date(), granularity: .month)
@@ -302,6 +303,115 @@ final class TransactionViewModel {
         }
         
         return true
+    }
+    
+    
+    // 반복 주기에 따라 날짜 계산
+//    private func nextCycleDate(from date: Date, cycle: RepeatCycle) -> Date {
+//        var component: Calendar.Component
+//        
+//        switch cycle {
+//        case .daily: component = .day
+//        case .weekly: component = .weekOfYear
+//        case .monthly: component = .month
+//        case .yearly: component = .year
+//        case .none: return date
+//        }
+//        
+//        return Calendar.current.date(byAdding: component, value: 1, to: date) ?? date
+//    }
+    
+    // MARK: - 반복 기능 관련 메서드
+    // 1. 실행 메서드 (반복 항목만 필터링)
+    func checkAndGenerateRepeatedTransactionsIfNeeded() {
+        let today = Date()
+        let repeatedItems = fetchRepeatableTransactions()
+        
+        for base in repeatedItems {
+            generateUpcomingTransactionsIfNeeded(for: base, until: today)
+        }
+    }
+    
+    // 2. 반복 항목 필터링
+    private func fetchRepeatableTransactions() -> [ExpenseModel] {
+        return transactions.filter { $0.isRepeated ?? false && $0.repeatCycle != nil }
+    }
+    
+    
+    // 3. 반복 항목별로 필요한 날짜 확인
+    private func generateUpcomingTransactionsIfNeeded(for base: ExpenseModel, until targetDate: Date) {
+        guard let cycle = base.repeatCycle else { return }
+        
+        var nextDate = findNextDate(for: base, cycle: cycle)
+        
+        while nextDate <= targetDate {
+            if shouldGenerateTransaction(for: base, on: nextDate) {
+                createRepeatedTransaction(from: base, on: nextDate)
+            }
+            nextDate = nextCycleDate(from: nextDate, cycle: cycle)
+        }
+    }
+    
+    // 4. 최신 반복 날자 구하기
+    private func findNextDate(for base: ExpenseModel, cycle: RepeatCycle) -> Date {
+        let latest = transactions
+            .filter {
+                $0.category == base.category &&
+                $0.amount == base.amount &&
+                $0.transaction == base.transaction &&
+                !($0.isRepeated ?? false)
+            }
+            .map { $0.date }
+            .max() ?? base.date
+
+        return nextCycleDate(from: latest, cycle: cycle)
+    }
+    
+    // 5. 생성 여부 판단
+    private func shouldGenerateTransaction(for base: ExpenseModel, on date: Date) -> Bool {
+        return !transactions.contains {
+            $0.date == date &&
+            $0.amount == base.amount &&
+            $0.transaction == base.transaction &&
+            $0.category == base.category &&
+            !($0.isRepeated ?? false)
+        }
+    }
+    
+    // 6. 복제 생성 및 저장
+    private func createRepeatedTransaction(from base: ExpenseModel, on date: Date) {
+        let new = ExpenseModel(
+            id: UUID(),
+            transaction: base.transaction,
+            category: base.category,
+            amount: base.amount,
+            image: nil,
+            date: date,
+            memo: base.memo ?? "",
+            isRepeated: false,
+            repeatCycle: .none
+        )
+
+        transactionManager.createTransaction(new)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] saved in
+                self?.transactions.append(saved)
+            })
+            .store(in: &cancellables)
+    }
+    
+    // 7. 다음 날짜 계산 메서드
+    private func nextCycleDate(from date: Date, cycle: RepeatCycle) -> Date {
+        var component: Calendar.Component
+        
+        switch cycle {
+        case .daily: component = .day
+        case .weekly: component = .weekOfYear
+        case .monthly: component = .month
+        case .yearly: component = .year
+        case .none: return date
+        }
+        
+        return Calendar.current.date(byAdding: component, value: 1, to: date) ?? date
     }
 }
 

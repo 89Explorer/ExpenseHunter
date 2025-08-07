@@ -19,6 +19,7 @@
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="launch" translatesAutoresizingMaskIntoConstraints="NO" id="FCg-5C-Vnp">
                                 <rect key="frame" x="16.666666666666657" y="246" width="360" height="360"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="360" id="QXz-pX-BUv"/>
                                     <constraint firstAttribute="height" constant="360" id="hk4-no-8cJ"/>
@@ -39,7 +40,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="launch" width="471.33334350585938" height="666.66668701171875"/>
+        <image name="launch" width="301.33334350585938" height="426.66665649414062"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

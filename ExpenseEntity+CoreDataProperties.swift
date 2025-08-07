@@ -24,6 +24,8 @@ extension ExpenseEntity {
     @NSManaged public var imagePath: String?
     @NSManaged public var category: String?
     @NSManaged public var memo: String?
+    @NSManaged public var isRepeated: Bool
+    @NSManaged public var repeatCycle: String? 
 
 }
 
@@ -53,6 +55,9 @@ extension ExpenseEntity {
         } else {
             image = nil
         }
+        
+        let isRepeatedValue = self.isRepeated
+        let repeatCycleEnum = RepeatCycle(rawValue: self.repeatCycle ?? "") ?? .none
 
         return ExpenseModel(
             id: uuid,
@@ -61,7 +66,9 @@ extension ExpenseEntity {
             amount: Int(self.amount),
             image: image,
             date: date,
-            memo: memo // ✅ 새로 추가된 필드
+            memo: memo,
+            isRepeated: isRepeatedValue,    // 반복기능
+            repeatCycle: repeatCycleEnum    // 반복단위
         )
     }
 }

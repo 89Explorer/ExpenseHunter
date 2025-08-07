@@ -6,7 +6,9 @@
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="imagePath" optional="YES" attributeType="String"/>
+        <attribute name="isRepeated" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="memo" optional="YES" attributeType="String"/>
+        <attribute name="repeatCycle" optional="YES" attributeType="String"/>
         <attribute name="transaction" optional="YES" attributeType="String"/>
     </entity>
 </model>

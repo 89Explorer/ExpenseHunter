@@ -71,8 +71,8 @@ class AddTransactionViewController: UIViewController {
     private func bindViewModel() {
         transactionViewModel.$transaction
             .receive(on: RunLoop.main)
-            .sink { [weak self] transaction in
-                guard let self, let transaction else { return }
+            .sink { [weak self] _ in
+                guard let self else { return }
                 self.addTableView.reloadData()
             }
             .store(in: &cancellables)
@@ -242,7 +242,7 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
 
             return cell
             
-        case .date, .amount, .category, .memo:
+        case .date, .amount, .category, .memo, .repeatType:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: AddCustomCell.reuseIdentifier, for: indexPath) as? AddCustomCell else { return UITableViewCell() }
             cell.configure(title: section.title)
             cell.selectionStyle = .none
@@ -281,11 +281,15 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
                 } else if let modelMemo = transactionViewModel.transaction?.memo {
                     cell.updateMemoValue(with: modelMemo)
                 }
-            } else {
+            } else if section == .category{
                 if let selectedCategory = transactionViewModel.transaction?.category {
                     cell.updateCategoryValue(with: selectedCategory)
                 } else if let modelCategory = transactionViewModel.transaction?.category {
                     cell.updateCategoryValue(with: modelCategory)
+                }
+            } else if section == .repeatType {
+                if let selectedRepeat = transactionViewModel.transaction?.repeatCycle?.title {
+                    cell.updateRepeatValue(with: selectedRepeat)
                 }
             }
             
@@ -299,14 +303,14 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
                 cell.setImage(selectedImage)
             }
             return cell
-            
+        
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let section = AddSection(rawValue: indexPath.section) else { fatalError("Invalid section") }
         switch section {
-        case .addType, .date, .amount, .category, .memo:
+        case .addType, .date, .amount, .category, .memo , .repeatType:
             return 52
             //return UITableView.automaticDimension
         default:
@@ -348,6 +352,9 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         case .memo:
             print("메모 valueLabel 눌림")
             presentMemoPicker(currentMemo: selectedMemo)
+        case .repeatType:
+            print("반복 valueLabel 눌림")
+            presentRepeatPicker()
         default:
             print("기타 valueLabel 눌림")
         }
@@ -356,6 +363,30 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         self.addTableView.reloadRows(at: [indexPath], with: .none)
         
     }
+    
+    
+    // 반복을 선택하는 AddRepeatViewController를 여는 메서드
+    private func presentRepeatPicker() {
+        let alert = UIAlertController(title: "반복 주기 선택", message: nil, preferredStyle: .actionSheet)
+        
+        RepeatCycle.allCases.forEach { cycle in
+            let action = UIAlertAction(title: cycle.title, style: .default) { [weak self] _ in
+                self?.transactionViewModel.transaction?.isRepeated = cycle != .none
+                self?.transactionViewModel.transaction?.repeatCycle = cycle
+                
+                self?.addTableView.reloadRows(
+                    at: [IndexPath(row: 0, section: AddSection.repeatType.rawValue)],
+                    with: .none)
+            }
+            alert.addAction(action)
+        }
+        
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        
+        // 현재 뷰컨트롤러에서 직접 present
+        present(alert, animated: true)
+    }
+    
     
     // 날짜를 선택하는 AddDateViewController를 여는 메서드
     private func presentCalendarPicker() {
@@ -375,6 +406,7 @@ extension AddTransactionViewController: AddCustomCellDelegate {
         }
         present(dateVC, animated: true)
     }
+    
     
     // 금액을 선택하는 AddAmountViewController를 여는 메서드
     private func presentAmountCalculator() {
@@ -635,17 +667,17 @@ extension AddTransactionViewController: UIImagePickerControllerDelegate, PHPicke
     }
     
 }
-
+ 
 
 // MARK: - Enum: 작성 테이블 섹션 관리
 enum AddSection: Int, CaseIterable {
     case addType
     case date
+    case repeatType
     case amount
     case category
     case memo
     case image
-    
     
     var title: String {
         switch self {
@@ -654,6 +686,7 @@ enum AddSection: Int, CaseIterable {
         case .category: return "분류"
         case .memo: return "메모"
         case .image: return "사진"
+        case .repeatType: return "반복"
         default: return ""
         }
     }

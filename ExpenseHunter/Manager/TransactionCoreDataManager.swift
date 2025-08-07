@@ -63,6 +63,10 @@ final class TransactionCoreDataManager {
             expenseEntity.memo = transaction.memo 
             expenseEntity.imagePath = savePath ?? ""
             
+            // ✅ 반복 관련 속성 추가
+            expenseEntity.isRepeated = transaction.isRepeated ?? false
+            expenseEntity.repeatCycle = transaction.repeatCycle?.rawValue
+            
             do {
                 try self.context.save()
                 if let model = expenseEntity.toModel() {
@@ -218,6 +222,11 @@ final class TransactionCoreDataManager {
                 entity.date = updatedTransaction.date
                 entity.category = updatedTransaction.category
                 entity.memo = updatedTransaction.memo
+                
+                // ✅ 반복여부 관련 기능
+                entity.isRepeated = updatedTransaction.isRepeated ?? false
+                entity.repeatCycle = updatedTransaction.repeatCycle?.rawValue
+
                 
                 if let newImage = updatedTransaction.image {
                     // 기존 이미지 제거
