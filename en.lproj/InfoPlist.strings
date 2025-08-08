@@ -7,3 +7,6 @@
 */
 
 CFBundleDisplayName = "GlanceBook";
+
+"NSCameraUsageDescription" = "The app needs access to the camera to let you capture receipts, purchases, or memorable moments for your expense records.";
+"NSPhotoLibraryUsageDescription" = "The app needs access to your photo library to let you select receipts, purchases, or memorable photos for your expense records.";
