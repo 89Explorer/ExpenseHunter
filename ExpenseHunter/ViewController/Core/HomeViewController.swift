@@ -160,9 +160,12 @@ extension HomeViewController {
         
 //        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
 //        let customBackImage = UIImage(systemName: "chevron.backward", withConfiguration: config)
-//        customBackImage?.withTintColor(.label)
-//        let backBarButtonItem = UIBarButtonItem(title: "", image: customBackImage, target: self, action: nil)
-//        self.navigationItem.backBarButtonItem = backBarButtonItem
+        //let backBarButtonItem = UIBarButtonItem(title: "", image: customBackImage, target: self, action: nil)
+        
+        let backButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        backButton.tintColor = UIColor.label
+        self.navigationItem.backBarButtonItem = backButton
+        
     }
     
     // 네비게이션에 표기될 텍스트 별 설정, 달리 설정하는 메서드
