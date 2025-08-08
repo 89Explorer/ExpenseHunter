@@ -47,6 +47,7 @@ class AddCustomCell: UITableViewCell {
         titleLabel.text = "날짜"
         titleLabel.font = UIFont(name: "OTSBAggroB", size: 16)
         titleLabel.textColor = .label
+        titleLabel.textAlignment = .center
         //titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
         valueLabel.text = ""
@@ -82,6 +83,8 @@ class AddCustomCell: UITableViewCell {
             totalStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
             totalStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
             totalStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+            
+            titleLabel.widthAnchor.constraint(equalToConstant: 100),
             
             seperator.heightAnchor.constraint(equalToConstant: 2),
             seperator.widthAnchor.constraint(equalTo: valueLabel.widthAnchor)
@@ -120,7 +123,7 @@ extension AddCustomCell {
     // AddCustomCell에 날짜 문자열을 외부에서 설정할 수 있도록 해주는 메서드
     func updateDateValue(with date: Date) {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.locale = Locale.current
         formatter.dateFormat = "yyyy-MM-dd (E)"
         let formatted = formatter.string(from: date)
         valueLabel.text = formatted
@@ -129,8 +132,9 @@ extension AddCustomCell {
     // AddAmountViewController 내에 선택한 금액을 전달하는 메서드 
     func updateAmountValue(with amount: Int) {
         let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        valueLabel.text = "₩ \(formatter.string(from: NSNumber(value: amount)) ?? "0")"
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current // 사용자의 기기 설정에 맞춘 통화
+        valueLabel.text = formatter.string(from: NSNumber(value: amount))
     }
     
     func updateMemoValue(with memo: String) {

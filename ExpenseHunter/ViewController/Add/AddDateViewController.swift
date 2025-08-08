@@ -31,7 +31,7 @@ class AddDateViewController: UIViewController {
     private func configureUI() {
         view.backgroundColor = .secondarySystemBackground
         
-        calendarView.locale = Locale(identifier: "ko")
+        calendarView.locale = Locale.current
         calendarView.layer.cornerRadius = 16
         calendarView.backgroundColor = .clear
         calendarView.calendar = .current
@@ -66,6 +66,7 @@ extension AddDateViewController: UICalendarViewDelegate, UICalendarSelectionSing
         // ✅ Date → DateComponents 변환
         let calendar = Calendar.current
         let component = calendar.dateComponents([.year, .month, .day], from: selected)
+        
         // ✅ 캘린더 데코레이션 갱신
         calendarView.reloadDecorations(forDateComponents: [component], animated: true)
         onDateSelected?(selected)

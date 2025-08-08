@@ -35,7 +35,8 @@ class DetailCalendarCell: UITableViewCell {
     private func configureUI() {
         backgroundColor = .clear
         
-        calendarView.locale = Locale(identifier: "ko")
+        //calendarView.locale = Locale(identifier: "ko")
+        calendarView.locale = Locale.current
         calendarView.backgroundColor = .systemBackground
         calendarView.layer.cornerRadius = 12
         calendarView.layer.masksToBounds = true

@@ -1,0 +1,117 @@
+/* 
+  Localizable.strings
+  ExpenseHunter
+
+  Created by 권정근 on 8/7/25.
+  
+*/
+
+"today" = "오늘 ";
+"income_summary" = "이번달, 누적 수입";
+"expense_summary" = "이번달, 누적 지출";
+"see_more" = "더보기";
+
+"section_income" = "📥 수입";
+"section_expense" = "📤 지출";
+"section_chart" = "📊 이번주 수입/지출 현황";
+"section_today" = "📝 오늘 수입/지출 내역";
+
+"chart_label_income" = "수입";
+"chart_label_expense" = "지출";
+
+"nav_title_income" = "수입 입력";
+"nav_title_expense" = "지출 입력";
+
+"add_section_date" = "날짜";
+"add_section_amount" = "금액";
+"add_section_category" = "분류";
+"add_section_memo" = "메모";
+"add_section_image" = "사진";
+"add_section_repeat" = "반복";
+
+"alert_title_error" = "오류";
+"alert_action_ok" = "확인";
+
+"alert_title_delete" = "내역 삭제";
+"alert_message_delete" = "지금 보고 계신 내역을 삭제하시겠습니까?";
+"alert_action_cancel" = "취소";
+"alert_action_delete" = "삭제";
+
+"nav_button_delete" = "삭제";
+
+"button_save" = "저장하기";
+
+"repeat_none" = "반복 없음";
+"repeat_daily" = "매일";
+"repeat_weekly" = "매주";
+"repeat_monthly" = "매달";
+"repeat_yearly" = "매년";
+
+"repeat_picker_title" = "반복 주기 선택";
+"cancel" = "취소";
+
+"done" = "완료";
+
+"category_salary" = "월급";
+"category_bonus" = "성과금";
+"category_allowance" = "용돈";
+"category_side_job" = "부업";
+"category_investment" = "투자수익";
+"category_financial_income" = "금융소득";
+"category_incentive" = "상여금";
+"category_retirement" = "퇴직금";
+"category_rental_income" = "임대료";
+"category_dividend" = "배당금";
+"category_repayment" = "상환금";
+"category_inheritance" = "상속/증여";
+"category_lottery" = "복권/경품 당첨금";
+"category_other_income" = "기타 수입";
+
+"category_food" = "식비";
+"category_transport" = "교통비";
+"category_entertainment" = "문화생활";
+"category_living" = "생활품";
+"category_clothing" = "의류";
+"category_insurance" = "보험";
+"category_beauty" = "미용";
+"category_health" = "의료/건강";
+"category_education" = "교육";
+"category_communication" = "통신비";
+"category_membership" = "회비";
+"category_tax" = "세금";
+"category_event" = "경조사";
+"category_savings" = "저축";
+"category_appliances" = "가전";
+"category_utilities" = "공과금";
+"category_credit_card" = "카드대금";
+"category_pet" = "반려동물";
+"category_travel" = "여행";
+"category_house" = "주거비";
+"category_others" = "기타";
+
+"permission_album_title" = "앨범 접근이 필요합니다.";
+"permission_album_message" = "설정에서 권한을 허용해주세요.";
+"permission_camera_title" = "카메라 접근이 필요합니다.";
+"permission_camera_message" = "설정에서 권한을 허용해주세요.";
+"permission_go_to_settings" = "설정으로 이동";
+"permission_cancel" = "취소";
+
+"camera_or_album_title" = "카메라 또는 앨범 선택";
+"camera_action_title" = "카메라";
+"photo_library_action_title" = "사진첩";
+"cancel_action_title" = "취소";
+
+"permission_camera_needed_title" = "카메라 권한이 필요합니다.";
+"permission_camera_needed_message" = "설정으로 이동하여 권한을 승인하세요";
+"permission_album_needed_title" = "사진첩 권한이 필요합니다.";
+"permission_album_needed_message" = "설정으로 이동하여 권한을 승인하세요";
+
+"chart_table_title" = "📊 차트";
+"detail_table_title" = "📋 상세";
+
+"category" = "항목";
+
+"detail_calendar_tab_title" = "📆 달력";
+"detail_table_tab_title" = "📋 상세 내역";
+
+"daily_transaction_title" = "🗒️ 일별 수입/지출 내역";

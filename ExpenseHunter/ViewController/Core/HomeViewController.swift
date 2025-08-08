@@ -17,7 +17,7 @@ class HomeViewController: UIViewController {
     private let transactionViewModel = TransactionViewModel()
     private var cancellables = Set<AnyCancellable>()
     private let now = Date()
-
+    
     
     // MARK: - UI Component
     private var expenseTableview: UITableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -29,7 +29,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .secondarySystemBackground
         configureUI()
-//        bindViewModel()
+        //        bindViewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,7 +49,7 @@ class HomeViewController: UIViewController {
             .sink { [weak self] _ in
                 
                 guard let self else { return }
-
+                
                 self.expenseTableview.reloadData()
                 
             }
@@ -157,25 +157,31 @@ extension HomeViewController {
         
         let leftItem = UIBarButtonItem(customView: dateLabel)
         navigationItem.leftBarButtonItem = leftItem
+        
+//        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
+//        let customBackImage = UIImage(systemName: "chevron.backward", withConfiguration: config)
+//        customBackImage?.withTintColor(.label)
+//        let backBarButtonItem = UIBarButtonItem(title: "", image: customBackImage, target: self, action: nil)
+//        self.navigationItem.backBarButtonItem = backBarButtonItem
     }
     
     // 네비게이션에 표기될 텍스트 별 설정, 달리 설정하는 메서드
     private func makeStyledDateText() -> NSAttributedString {
-        let todayText = "오늘 "
+        let todayText = NSLocalizedString("today", comment: "Prefix for today`s date")
         let dateText = getFormattedDate() // 예: "7월 11일"
         
         let attributedString = NSMutableAttributedString()
         
         // "오늘, "
         let todayAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "OTSBAggroB", size: 24) ?? UIFont.systemFont(ofSize: 20, weight: .bold),
+            .font: UIFont(name: "OTSBAggroB", size: 24) ?? UIFont.systemFont(ofSize: 24, weight: .bold),
             .foregroundColor: UIColor.label
         ]
         attributedString.append(NSAttributedString(string: todayText, attributes: todayAttributes))
         
         // "7월 11일"
         let dateAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "OTSBAggroL", size: 20) ?? UIFont.systemFont(ofSize: 20, weight: .bold),
+            .font: UIFont(name: "OTSBAggroL", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold),
             .foregroundColor: UIColor.secondaryLabel
         ]
         attributedString.append(NSAttributedString(string: dateText, attributes: dateAttributes))
@@ -185,9 +191,20 @@ extension HomeViewController {
     
     // 오늘 날짜를 String 타입으로 변환해주는 메서드
     private func getFormattedDate() -> String {
+        
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M월 d일"
+        //formatter.locale = Locale(identifier: "ko_KR")
+        let locale = Locale.current
+        formatter.locale = locale
+        
+        if locale.language.languageCode?.identifier == "ko" {
+            formatter.dateFormat = "yyyy년 M월 d일"
+        } else {
+            
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .none
+        }
+        
         return formatter.string(from: Date())
     }
 }
@@ -241,7 +258,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             
             let moreButton = UIButton(configuration: {
                 var config = UIButton.Configuration.filled()
-                config.title = "더보기"
+                config.title = NSLocalizedString("see_more", comment: "Button title for 'See more' action")
                 config.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8) // padding
                 config.baseBackgroundColor = .systemBackground
                 config.baseForegroundColor = .label
@@ -303,7 +320,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             cell.selectionStyle = .none
             let amount = section == .income ? transactionViewModel.totalIncomeThisMonth : transactionViewModel.totalExpenseThisMonth
             let type: TransactionType = section == .income ? .income : .expense
-            let title = section == .income ? "이번달, 누적 수입" : "이번달, 누적 지출"
+            
+            //let title = section == .income ? "이번달, 누적 수입" : "이번달, 누적 지출"
+            
+            let title = section == .income
+            ? NSLocalizedString("income_summary", comment: "This month's total income")
+            : NSLocalizedString("expense_summary", comment: "This month's total expense")
+            
             cell.configure(with: title, amount: amount, type: type)
             
             return cell
@@ -356,10 +379,14 @@ enum HomeSection: Int, CaseIterable {
     
     var title: String {
         switch self {
-        case .income: return "📥 수입"
-        case .expense: return "📤 지출"
-        case .chart: return "📊 이번주 수입/지출 현황"
-        case .today: return "📝 오늘 수입/지출 내역"
+        case .income:
+            return NSLocalizedString("section_income", comment: "Title for income section")
+        case .expense:
+            return NSLocalizedString("section_expense", comment: "Title for expense section")
+        case .chart:
+            return NSLocalizedString("section_chart", comment: "Title for chart section")
+        case .today:
+            return NSLocalizedString("section_today", comment: "Title for today section")
         }
     }
     

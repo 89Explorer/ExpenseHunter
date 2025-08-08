@@ -42,7 +42,8 @@ class AddTypeCell: UITableViewCell {
     private func configureUI() {
         contentView.backgroundColor = .systemBackground
         
-        incomeButton.setTitle("📥 수입", for: .normal)
+        let incomeTitle = NSLocalizedString("section_income", comment: "Label for Income Section")
+        incomeButton.setTitle(incomeTitle, for: .normal)
         incomeButton.titleLabel?.font = UIFont(name: "OTSBAggroB", size: 16)
         incomeButton.setTitleColor(.systemGreen, for: .normal)
         incomeButton.backgroundColor = .secondarySystemBackground
@@ -51,7 +52,8 @@ class AddTypeCell: UITableViewCell {
         incomeButton.layer.borderColor = UIColor.systemGreen.cgColor
         incomeButton.tag = 0
         
-        expenseButton.setTitle("📤 지출", for: .normal)
+        let expenseTitle = NSLocalizedString("section_expense", comment: "Label for Expense Section")
+        expenseButton.setTitle(expenseTitle, for: .normal)
         expenseButton.titleLabel?.font = UIFont(name: "OTSBAggroB", size: 16)
         expenseButton.setTitleColor(.systemRed, for: .normal)
         expenseButton.backgroundColor = .secondarySystemBackground

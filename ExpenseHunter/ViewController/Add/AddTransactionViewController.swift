@@ -13,7 +13,7 @@ class AddTransactionViewController: UIViewController {
     
     
     // MARK: - Variable
-    private let addSection: [String] = ["구분", "날짜", "금액", "분류", "자산출처", "내용"]
+    //private let addSection: [String] = ["구분", "날짜", "금액", "분류", "자산출처", "내용"]
     private var transactionViewModel: TransactionViewModel
     private var cancellables = Set<AnyCancellable>()
     private let mode: AddTransactionMode
@@ -35,7 +35,7 @@ class AddTransactionViewController: UIViewController {
     private var selectedDate: Date?
     private var selectedAmount: Int?
     private var selectedMemo: String?
-    private var selectedImage: UIImage?     // 이건 안쓴다... 왜냐하면 셀 내부의 통신이기 때문에 전역적으로 관리할 필요 없다. 
+    private var selectedImage: UIImage?     // 이건 안쓴다... 왜냐하면 셀 내부의 통신이기 때문에 전역적으로 관리할 필요 없다.
     
     
     // MARK: - UI Component
@@ -84,7 +84,12 @@ class AddTransactionViewController: UIViewController {
         case .create:
             navigationItem.rightBarButtonItem = nil
         case .edit(id: _):
-            let deleteButton = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteButtonTapped))
+            let deleteButton = UIBarButtonItem(
+                title: NSLocalizedString("nav_button_delete", comment: "Navigation bar delete button"),
+                style: .plain,
+                target: self,
+                action: #selector(deleteButtonTapped)
+            )
             deleteButton.tintColor = .systemRed
             navigationItem.rightBarButtonItem = deleteButton
         }
@@ -108,7 +113,11 @@ class AddTransactionViewController: UIViewController {
         addTableView.register(AddCustomCell.self, forCellReuseIdentifier: AddCustomCell.reuseIdentifier)
         addTableView.register(AddImageCell.self, forCellReuseIdentifier: AddImageCell.reuseIdentifier)
         
-        saveButton.setTitle("저장하기", for: .normal)
+        
+        saveButton.setTitle(
+            NSLocalizedString("button_save", comment: "Save button title"),
+            for: .normal
+        )
         saveButton.setTitleColor(.label, for: .normal)
         saveButton.titleLabel?.font = UIFont(name: "OTSBAggroB", size: 20)
         saveButton.layer.cornerRadius = 16
@@ -141,9 +150,9 @@ class AddTransactionViewController: UIViewController {
         
         switch selectedTransactionType {
         case .income:
-            titleLabel.text = "수입 입력"
+            titleLabel.text = NSLocalizedString("nav_title_income", comment: "Navigation title when adding income")
         case .expense:
-            titleLabel.text = "지출 입력"
+            titleLabel.text = NSLocalizedString("nav_title_expense", comment: "Navigation title when adding expense")
         }
         
         titleLabel.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
@@ -154,16 +163,39 @@ class AddTransactionViewController: UIViewController {
     
     // 경고창 열어주는 메서드
     func showAlert(message: String) {
-        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        let alert = UIAlertController(
+            title: NSLocalizedString("alert_title_error", comment: "Alert title for error"),
+            message: message,
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("alert_action_ok", comment: "OK button title"),
+            style: .default
+        ))
+        
         present(alert, animated: true)
     }
     
+    
     // 삭제 경고창 메서드
     private func showDeleteConfirmationAlert() {
-        let alert = UIAlertController(title: "내역 삭제", message: "지금 보고 계신 내역을 삭제하시겠습니까?", preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+        let alert = UIAlertController(
+            title: NSLocalizedString("alert_title_delete", comment: "Title for delete confirmation"),
+            message: NSLocalizedString("alert_message_delete", comment: "Message for delete confirmation"),
+            preferredStyle: .alert
+        )
+        
+        let cancelAction = UIAlertAction(
+            title: NSLocalizedString("alert_action_cancel", comment: "Cancel button title"),
+            style: .cancel,
+            handler: nil
+        )
+        
+        let deleteAction = UIAlertAction(
+            title: NSLocalizedString("alert_action_delete", comment: "Delete button title"),
+            style: .destructive
+        ) { [weak self] _ in
             guard let self = self else { return }
             
             if case let .edit(id) = self.mode {
@@ -175,9 +207,9 @@ class AddTransactionViewController: UIViewController {
         alert.addAction(cancelAction)
         alert.addAction(deleteAction)
         present(alert, animated: true, completion: nil)
-        
     }
-
+    
+    
     
     // MARK: - ActionMethod
     @objc private func didTappedSaveButton() {
@@ -222,12 +254,12 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
         guard let section = AddSection(rawValue: indexPath.section) else { fatalError("Invalid section") }
         
         switch section {
-//        case .addType:
-//            guard let cell = tableView.dequeueReusableCell(withIdentifier: AddTypeCell.reuseIdentifier, for: indexPath) as? AddTypeCell else { return UITableViewCell() }
-//            cell.delegate = self
-//            cell.selectionStyle = .none
-//            cell.configure(selectedType: selectedTransactionType)
-//            return cell
+            //        case .addType:
+            //            guard let cell = tableView.dequeueReusableCell(withIdentifier: AddTypeCell.reuseIdentifier, for: indexPath) as? AddTypeCell else { return UITableViewCell() }
+            //            cell.delegate = self
+            //            cell.selectionStyle = .none
+            //            cell.configure(selectedType: selectedTransactionType)
+            //            return cell
         case .addType:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: AddTypeCell.reuseIdentifier, for: indexPath) as? AddTypeCell else { return UITableViewCell() }
             cell.delegate = self
@@ -239,7 +271,7 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
             } else {
                 cell.configure(selectedType: nil) // 기본값 처리
             }
-
+            
             return cell
             
         case .date, .amount, .category, .memo, .repeatType:
@@ -303,7 +335,7 @@ extension AddTransactionViewController: UITableViewDelegate, UITableViewDataSour
                 cell.setImage(selectedImage)
             }
             return cell
-        
+            
         }
     }
     
@@ -367,7 +399,11 @@ extension AddTransactionViewController: AddCustomCellDelegate {
     
     // 반복을 선택하는 AddRepeatViewController를 여는 메서드
     private func presentRepeatPicker() {
-        let alert = UIAlertController(title: "반복 주기 선택", message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(
+            title: NSLocalizedString("repeat_picker_title", comment: "Title for repeat cycle picker"),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
         
         RepeatCycle.allCases.forEach { cycle in
             let action = UIAlertAction(title: cycle.title, style: .default) { [weak self] _ in
@@ -376,14 +412,18 @@ extension AddTransactionViewController: AddCustomCellDelegate {
                 
                 self?.addTableView.reloadRows(
                     at: [IndexPath(row: 0, section: AddSection.repeatType.rawValue)],
-                    with: .none)
+                    with: .none
+                )
             }
             alert.addAction(action)
         }
         
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("cancel", comment: "Cancel button"),
+            style: .cancel,
+            handler: nil
+        ))
         
-        // 현재 뷰컨트롤러에서 직접 present
         present(alert, animated: true)
     }
     
@@ -512,7 +552,11 @@ extension AddTransactionViewController {
                 print("앨범 접근 승인")
             } else {
                 print("앨범 접근 불허")
-                self.showPermissionAlert(title: "앨범 접근이 필요합니다.", message: "설정에서 권한을 허용해주세요 ")
+                self.showPermissionAlert(
+                    title: NSLocalizedString("permission_album_title",
+                                             comment: "Alert title shown when the user denies photo album access."),
+                    message: NSLocalizedString("permission_album_message", comment: "Alert message shown when the user denies photo album access.")
+                )
             }
         }
         
@@ -522,19 +566,31 @@ extension AddTransactionViewController {
                 print("카메라 접근 승인")
             } else {
                 print("카메라 접근 불허")
-                self.showPermissionAlert(title: "카메라 접근이 필요합니다.", message: "설정에서 권한을 허용해주세요 ")
+                self.showPermissionAlert(
+                    title: NSLocalizedString("permission_camera_title",comment: "Alert title shown when the user denies camera access."),
+                    message: NSLocalizedString("permission_camera_message", comment: "Alert message shown when the user denies camera access.")
+                )
             }
         }
-        
     }
     
     func showPermissionAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("permission_go_to_settings", comment: "Button text to navigate to the app settings."),
+            style: .default
+        ) { _ in
             guard let settingURL = URL(string: UIApplication.openSettingsURLString) else { return }
             UIApplication.shared.open(settingURL)
         })
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("permission_cancel", comment: "Button text to cancel the permission alert."),
+            style: .cancel
+        ))
         present(alert, animated: true)
     }
 }
@@ -544,22 +600,34 @@ extension AddTransactionViewController {
 extension AddTransactionViewController: UIImagePickerControllerDelegate, PHPickerViewControllerDelegate, UINavigationControllerDelegate {
     
     private func showCameraAndAlbum() {
-        let alert = UIAlertController(title: "카메라 또는 앨범 선택", message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(
+            title: NSLocalizedString("camera_or_album_title", comment: "The title of the alert sheet asking the user to choose between camera and photo album."),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
         
-        let showCameraAction = UIAlertAction(title: "Camera", style: .default) { _ in
+        let showCameraAction = UIAlertAction(
+            title: NSLocalizedString("camera_action_title", comment: "Button text to open the camera."),
+            style: .default
+        ) { _ in
             print("카메라 선택")
             MediaPermissionManager.shared.checkAndRequestIfNeeded(.camera) { [weak self] granted in
                 guard let self else { return }
                 if granted {
                     self.openCamera()
                 } else {
-                    self.showPermissionAlert(title: "카메라 권한이 필요합니다.", message: "설정으로 이동하여 권한을 승인하세요")
+                    self.showPermissionAlert(
+                        title: NSLocalizedString("permission_camera_needed_title", comment: "Alert title when camera permission is required."),
+                        message: NSLocalizedString("permission_camera_needed_message", comment: "Alert message explaining why camera permission is needed.")
+                    )
                 }
             }
-            //self.openCamera()
         }
         
-        let choosePhotoAction = UIAlertAction(title: "Photo Library", style: .default) { _ in
+        let choosePhotoAction = UIAlertAction(
+            title: NSLocalizedString("photo_library_action_title", comment: "Button text to open the photo library."),
+            style: .default
+        ) { _ in
             print("사진첩 선택")
             MediaPermissionManager.shared.checkAndRequestIfNeeded(.album) { [weak self] granted in
                 guard let self else { return }
@@ -567,12 +635,19 @@ extension AddTransactionViewController: UIImagePickerControllerDelegate, PHPicke
                     print("사진첩을 선택헤서 사진첩으로 접근합니다.")
                     self.presentPhotoPicker()
                 } else {
-                    self.showPermissionAlert(title: "사진첩 권한이 필요합니다.", message: "설정으로 이동하여 권한을 승인하세요")
+                    self.showPermissionAlert(
+                        title: NSLocalizedString("permission_album_needed_title", comment: "Alert title when photo album permission is required."),
+                        message: NSLocalizedString("permission_album_needed_message", comment: "Alert message explaining why photo album permission is needed.")
+                    )
                 }
             }
         }
         
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(
+            title: NSLocalizedString("cancel_action_title", comment: "Button text to dismiss the alert."),
+            style: .cancel,
+            handler: nil
+        )
         
         alert.addAction(showCameraAction)
         alert.addAction(choosePhotoAction)
@@ -667,7 +742,7 @@ extension AddTransactionViewController: UIImagePickerControllerDelegate, PHPicke
     }
     
 }
- 
+
 
 // MARK: - Enum: 작성 테이블 섹션 관리
 enum AddSection: Int, CaseIterable {
@@ -681,13 +756,20 @@ enum AddSection: Int, CaseIterable {
     
     var title: String {
         switch self {
-        case .date: return "날짜"
-        case .amount: return "금액"
-        case .category: return "분류"
-        case .memo: return "메모"
-        case .image: return "사진"
-        case .repeatType: return "반복"
-        default: return ""
+        case .date:
+            return NSLocalizedString("add_section_date", comment: "Label for date section")
+        case .amount:
+            return NSLocalizedString("add_section_amount", comment: "Label for amount section")
+        case .category:
+            return NSLocalizedString("add_section_category", comment: "Label for category section")
+        case .memo:
+            return NSLocalizedString("add_section_memo", comment: "Label for memo section")
+        case .image:
+            return NSLocalizedString("add_section_image", comment: "Label for image section")
+        case .repeatType:
+            return NSLocalizedString("add_section_repeat", comment: "Label for repeat section")
+        default:
+            return ""
         }
     }
 }

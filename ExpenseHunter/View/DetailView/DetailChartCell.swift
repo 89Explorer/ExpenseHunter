@@ -75,7 +75,10 @@ class DetailChartCell: UITableViewCell {
     
     func configureChart(with data: [(category: String, amount: Double)], usePercentage: Bool = false) {
         let entries = data.map { PieChartDataEntry(value: $0.amount, label: $0.category) }
-        let dataSet = PieChartDataSet(entries: entries, label: "지출 항목")
+        
+        
+        let category = NSLocalizedString("category", comment: "Label for category")
+        let dataSet = PieChartDataSet(entries: entries, label: category)
 
         dataSet.sliceSpace = 2.0
         dataSet.selectionShift = 7

@@ -51,13 +51,13 @@ class HomeTodayStatusCell: UITableViewCell {
         statusImageView.layer.cornerRadius = 12
         statusImageView.clipsToBounds = true
         
-        titleLabel.text = "편의점 털기"
+        //titleLabel.text = "편의점 털기"
         titleLabel.font = UIFont(name: "OTSBAggroB", size: 12)
         titleLabel.textColor = .label
         titleLabel.numberOfLines = 1
         
-        categoryLabel.text = "카드대금"
-        categoryLabel.font = UIFont(name: "OTSBAggroL", size: 16)
+        //categoryLabel.text = "카드대금"
+        categoryLabel.font = UIFont(name: "OTSBAggroL", size: 12)
         categoryLabel.textColor = .label
         categoryLabel.numberOfLines = 1
         
@@ -77,7 +77,7 @@ class HomeTodayStatusCell: UITableViewCell {
         photoImageView.clipsToBounds = true
         photoImageView.isHidden = true
         
-        amountLabel.text = "- ₩ 160,000"
+        //amountLabel.text = "- ₩ 160,000"
         amountLabel.font = UIFont(name: "OTSBAggroL", size: 16)
         amountLabel.textColor = .systemRed
         amountLabel.numberOfLines = 1
@@ -92,7 +92,7 @@ class HomeTodayStatusCell: UITableViewCell {
         
         let totalStackView: UIStackView = UIStackView(arrangedSubviews: [statusImageView, categoryLabel, amountLabel])
         totalStackView.axis = .horizontal
-        totalStackView.spacing = 12
+        totalStackView.spacing = 8
         totalStackView.alignment = .center
         totalStackView.distribution = .fill
         
@@ -112,14 +112,14 @@ class HomeTodayStatusCell: UITableViewCell {
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
             
-            statusImageView.widthAnchor.constraint(equalToConstant: 40),
-            statusImageView.heightAnchor.constraint(equalToConstant: 40),
+            statusImageView.widthAnchor.constraint(equalToConstant: 24),
+            statusImageView.heightAnchor.constraint(equalToConstant: 24),
             
-            memoImageView.widthAnchor.constraint(equalToConstant: 28),
-            memoImageView.heightAnchor.constraint(equalToConstant: 28),
+            memoImageView.widthAnchor.constraint(equalToConstant: 20),
+            memoImageView.heightAnchor.constraint(equalToConstant: 20),
             
-            photoImageView.widthAnchor.constraint(equalToConstant: 28),
-            photoImageView.heightAnchor.constraint(equalToConstant: 28),
+            photoImageView.widthAnchor.constraint(equalToConstant: 20),
+            photoImageView.heightAnchor.constraint(equalToConstant: 20),
             
             totalStackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
             totalStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
@@ -127,7 +127,7 @@ class HomeTodayStatusCell: UITableViewCell {
             totalStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
             
             innerStackView.centerYAnchor.constraint(equalTo: totalStackView.centerYAnchor),
-            innerStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 136)
+            innerStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 156)
         ])
     }
     
@@ -142,20 +142,24 @@ class HomeTodayStatusCell: UITableViewCell {
         }
         
         let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.groupingSeparator = ","
-        formatter.locale = Locale(identifier: "ko")
+        formatter.numberStyle = .currency
+        
+        if Locale.current.identifier == "ko" {
+            formatter.locale = Locale(identifier: "ko_KR")
+        } else {
+            formatter.locale = Locale.current
+        }
         
         let formattedAmount = formatter.string(from: NSNumber(value: data.amount))
         
         if type == .income {
             //containerView.backgroundColor = .systemGreen.withAlphaComponent(0.1)
+            amountLabel.text = "\(formattedAmount ?? "0")"
             amountLabel.textColor = .systemGreen
-            amountLabel.text = "+ ₩ \(formattedAmount ?? "0") 원"
         } else if type == .expense {
             //containerView.backgroundColor = .systemRed.withAlphaComponent(0.1)
+            amountLabel.text = "\(formattedAmount ?? "0")"
             amountLabel.textColor = .systemRed
-            amountLabel.text = "- ₩ \(formattedAmount ?? "0") 원"
         }
 
         memoImageView.isHidden = false
@@ -177,21 +181,24 @@ class HomeTodayStatusCell: UITableViewCell {
         }
         
         let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.groupingSeparator = ","
-        formatter.locale = Locale(identifier: "ko")
+        formatter.numberStyle = .currency
         
-        let amount = data.amount
-        let formattedAmount = formatter.string(from: NSNumber(value: amount))
+        if Locale.current.identifier == "ko" {
+            formatter.locale = Locale(identifier: "ko_KR")
+        } else {
+            formatter.locale = Locale.current
+        }
+        
+        let formattedAmount = formatter.string(from: NSNumber(value: data.amount))
         
         if type == .income {
             //containerView.backgroundColor = .systemGreen.withAlphaComponent(0.1)
+            amountLabel.text = "\(formattedAmount ?? "0")"
             amountLabel.textColor = .systemGreen
-            amountLabel.text = "+ ₩ \(formattedAmount ?? "0") 원"
         } else if type == .expense {
             //containerView.backgroundColor = .systemRed.withAlphaComponent(0.1)
+            amountLabel.text = "\(formattedAmount ?? "0")"
             amountLabel.textColor = .systemRed
-            amountLabel.text = "- ₩ \(formattedAmount ?? "0") 원"
         }
         
     }

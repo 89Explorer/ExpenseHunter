@@ -45,6 +45,7 @@ class AddImageCell: UITableViewCell {
         contentView.backgroundColor = .systemBackground
         
         titleLabel.text = ""
+        titleLabel.textAlignment = .center
         titleLabel.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
         titleLabel.textColor = .label
         //titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
@@ -95,6 +96,8 @@ class AddImageCell: UITableViewCell {
             totalStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
             totalStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
             totalStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+            
+            titleLabel.widthAnchor.constraint(equalToConstant: 100),
             
             //cameraButton.heightAnchor.constraint(equalToConstant: 30),
             cameraButton.widthAnchor.constraint(equalToConstant: 30),

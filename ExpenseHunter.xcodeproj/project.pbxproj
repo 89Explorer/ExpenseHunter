@@ -10,6 +10,7 @@
 		A12C8D2A2E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12C8D292E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift */; };
 		A12C8D2B2E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12C8D282E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift */; };
 		A13D39D02E4474780082F215 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A13D39CE2E4474780082F215 /* InfoPlist.strings */; };
+		A13D39D82E447DC50082F215 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A13D39D62E447DC50082F215 /* Localizable.strings */; };
 		A1E343322E2594A2007FF1D0 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = A1E343312E2594A2007FF1D0 /* DGCharts */; };
 /* End PBXBuildFile section */
 
@@ -18,6 +19,8 @@
 		A12C8D292E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExpenseEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A13D39D22E4477FF0082F215 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A13D39D52E4478A30082F215 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A13D39D72E447DC50082F215 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A13D39D92E447DC90082F215 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A1E3430C2E244A04007FF1D0 /* ExpenseHunter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpenseHunter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -57,6 +60,7 @@
 		A1D188462E20247A0085F8A5 = {
 			isa = PBXGroup;
 			children = (
+				A13D39D62E447DC50082F215 /* Localizable.strings */,
 				A13D39CE2E4474780082F215 /* InfoPlist.strings */,
 				A12C8D282E2A8C62002509BA /* ExpenseEntity+CoreDataClass.swift */,
 				A12C8D292E2A8C62002509BA /* ExpenseEntity+CoreDataProperties.swift */,
@@ -132,6 +136,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A13D39D02E4474780082F215 /* InfoPlist.strings in Resources */,
+				A13D39D82E447DC50082F215 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,6 +162,15 @@
 				A13D39D52E4478A30082F215 /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		A13D39D62E447DC50082F215 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A13D39D72E447DC50082F215 /* en */,
+				A13D39D92E447DC90082F215 /* ko */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

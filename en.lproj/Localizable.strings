@@ -1,0 +1,117 @@
+/* 
+  Localizable.strings
+  ExpenseHunter
+
+  Created by 권정근 on 8/7/25.
+  
+*/
+
+"today" = "Today ";
+"income_summary" = "Income this month";
+"expense_summary" = "Expenses this month";
+"see_more" = "more";
+
+"section_income" = "📥 Income";
+"section_expense" = "📤 Expense";
+"section_chart" = "📊 Weekly Overview";
+"section_today" = "📝 Today’s Transactions";
+
+"chart_label_income" = "Income";
+"chart_label_expense" = "Expense";
+
+"nav_title_income" = "Add Income";
+"nav_title_expense" = "Add Expense";
+
+"add_section_date" = "Date";
+"add_section_amount" = "Amount";
+"add_section_category" = "Category";
+"add_section_memo" = "Memo";
+"add_section_image" = "Photo";
+"add_section_repeat" = "Repeat";
+
+"alert_title_error" = "Error";
+"alert_action_ok" = "OK";
+
+"alert_title_delete" = "Delete Record";
+"alert_message_delete" = "Are you sure you want to delete this record?";
+"alert_action_cancel" = "Cancel";
+"alert_action_delete" = "Delete";
+
+"nav_button_delete" = "Delete";
+
+"button_save" = "Save";
+
+"repeat_none" = "No Repeat";
+"repeat_daily" = "Daily";
+"repeat_weekly" = "Weekly";
+"repeat_monthly" = "Monthly";
+"repeat_yearly" = "Yearly";
+
+"repeat_picker_title" = "Select Repeat Cycle";
+"cancel" = "Cancel";
+
+"done" = "Done";
+
+"category_salary" = "Salary";
+"category_bonus" = "Bonus";
+"category_allowance" = "Allowance";
+"category_side_job" = "Side Job";
+"category_investment" = "Investment Income";
+"category_financial_income" = "Financial Income";
+"category_incentive" = "Incentive";
+"category_retirement" = "Retirement Pay";
+"category_rental_income" = "Rental Income";
+"category_dividend" = "Dividend";
+"category_repayment" = "Repayment";
+"category_inheritance" = "Inheritance/Gift";
+"category_lottery" = "Lottery/Prize";
+"category_other_income" = "Other Income";
+
+"category_food" = "Food";
+"category_transport" = "Transport";
+"category_entertainment" = "Entertainment";
+"category_living" = "Living Goods";
+"category_clothing" = "Clothing";
+"category_insurance" = "Insurance";
+"category_beauty" = "Beauty";
+"category_health" = "Medical/Health";
+"category_education" = "Education";
+"category_communication" = "Communication";
+"category_membership" = "Membership Fee";
+"category_tax" = "Tax";
+"category_event" = "Events/Gifts";
+"category_savings" = "Savings";
+"category_appliances" = "Home Appliances";
+"category_utilities" = "Utilities";
+"category_credit_card" = "Credit Card";
+"category_pet" = "Pet";
+"category_travel" = "Travel";
+"category_house" = "Housing";
+"category_others" = "Others";
+
+"permission_album_title" = "Photo Library Access Required";
+"permission_album_message" = "Please allow access in Settings.";
+"permission_camera_title" = "Camera Access Required";
+"permission_camera_message" = "Please allow access in Settings.";
+"permission_go_to_settings" = "Go to Settings";
+"permission_cancel" = "Cancel";
+
+"camera_or_album_title" = "Select Camera or Album";
+"camera_action_title" = "Camera";
+"photo_library_action_title" = "Photo Library";
+"cancel_action_title" = "Cancel";
+
+"permission_camera_needed_title" = "Camera Permission Required";
+"permission_camera_needed_message" = "Please allow access in Settings.";
+"permission_album_needed_title" = "Photo Library Permission Required";
+"permission_album_needed_message" = "Please allow access in Settings.";
+
+"chart_table_title" = "📊 Chart";
+"detail_table_title" = "📋 Detail";
+
+"category" = "category";
+
+"detail_calendar_tab_title" = "📆 Calendar";
+"detail_table_tab_title" = "📋 Details";
+
+"daily_transaction_title" = "🗒️ Daily Details";

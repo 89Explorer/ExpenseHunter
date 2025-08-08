@@ -194,9 +194,11 @@ extension DetailChartViewController {
         
         switch transactionType {
         case .income:
-            titleLabel.text = "📥 이번달, 누적 수입"
+            let incomeTitle = NSLocalizedString("income_summary", comment: "Label for income")
+            titleLabel.text = incomeTitle
         case .expense:
-            titleLabel.text = "📤 이번달, 누적 지출"
+            let expenseTitle = NSLocalizedString("expense_summary", comment: "Label for expense")
+            titleLabel.text = expenseTitle
         }
         
         titleLabel.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
@@ -215,9 +217,9 @@ enum ChartTable: Int, CaseIterable {
     var title: String {
         switch self {
         case .chart:
-            return "📊 차트"
+            return NSLocalizedString("chart_table_title", comment: "Title for the chart tab.")
         case .detail:
-            return "📋 상세"
+            return NSLocalizedString("detail_table_title", comment: "Title for the detail tab.")
         }
     }
 }

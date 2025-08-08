@@ -26,7 +26,7 @@ final class AddAmountViewController: UIViewController {
         label.font = .monospacedDigitSystemFont(ofSize: 28, weight: .bold)
         label.textColor = .label
         label.textAlignment = .right
-        label.text = "₩ 0 원"
+        label.text = "0"
         label.numberOfLines = 1
         return label
     }()
@@ -37,7 +37,7 @@ final class AddAmountViewController: UIViewController {
         ["4", "5", "6", "×"],
         ["1", "2", "3", "−"],
         ["0", ".", "=", "+"],
-        ["완료"]
+        [NSLocalizedString("done", comment: "Label for Done button")]
     ]
     
     private lazy var keypadStack: UIStackView = {
@@ -122,9 +122,10 @@ final class AddAmountViewController: UIViewController {
             // 세 자리마다 쉼표(,)를 추가한 문자열로 변환
             // 예: 123456 → "₩ 123,456 원"
             let formatter = NumberFormatter()
-            formatter.numberStyle = .decimal
+            formatter.numberStyle = .currency
+            formatter.locale = Locale.current // 사용자의 기기 설정에 맞춘 통화
             let numberText = formatter.string(from: NSNumber(value: result)) ?? "0"
-            return "₩ \(numberText) 원"
+            return "\(numberText)"
         }
         
         // 계산식 등 숫자가 아닐 경우 그대로 반환
@@ -220,7 +221,7 @@ final class AddAmountViewController: UIViewController {
         // 수식이 비어있으면 0 전달하고 dismiss
         // 그렇지 않으면 계산된 결과(Int) 전달하고 dismiss
         // 예: rawExpression = "1000+500" → 결과 1500 → onAmountSelected?(1500)
-        case "완료":
+        case NSLocalizedString("done", comment: "Label for Done button"):
             guard !rawExpression.isEmpty else {
                 onAmountSelected?(0)
                 dismiss(animated: true)

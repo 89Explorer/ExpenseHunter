@@ -42,12 +42,12 @@ class HomeExpenseCell: UITableViewCell {
 //        containerView.layer.shadowRadius = 4
 //        containerView.layer.masksToBounds = false
         
-        titleLabel.text = "이번 달, 수입"
-        titleLabel.font = UIFont(name: "OTSBAggroB", size: 20)
+        //titleLabel.text = "이번 달, 수입"
+        titleLabel.font = UIFont(name: "OTSBAggroB", size: 18)
         titleLabel.textColor = .label
         titleLabel.numberOfLines = 0
         
-        amountLabel.text = "₩ 3,500,000"
+        //amountLabel.text = "₩ 3,500,000"
         amountLabel.font = UIFont(name: "OTSBAggroB", size: 32)
         amountLabel.textColor = .label
         amountLabel.numberOfLines = 0
@@ -83,12 +83,16 @@ class HomeExpenseCell: UITableViewCell {
         titleLabel.text = title
         
         let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.groupingSeparator = ","
-        formatter.locale = Locale(identifier: "ko")
+        formatter.numberStyle = .currency
+        
+        if Locale.current.identifier == "ko" {
+            formatter.locale = Locale(identifier: "ko_KR")
+        } else {
+            formatter.locale = Locale.current
+        }
         
         let formattedAmount = formatter.string(from: NSNumber(value: amount))
-        amountLabel.text = "₩ \(formattedAmount ?? "0") 원"
+        amountLabel.text = "\(formattedAmount ?? "0")"
         
         if type == .income {
             //containerView.backgroundColor = .systemGreen.withAlphaComponent(0.1)

@@ -14,8 +14,6 @@ class HomeChartCell: UITableViewCell {
     
     // MARK: - Variable
     static let reuseIdentifier: String = "HomeChartCell"
-    
-    // 더미 데이터
     private let days: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" ]
     private let incomeValues: [Double] = [50000, 30000, 20000, 60000, 10000, 40000, 30000]
     private let expenseValues: [Double] = [2000000, 150000, 300000, 200000, 250000, 1000000, 1200000]
@@ -149,10 +147,13 @@ class HomeChartCell: UITableViewCell {
             expenseEntries.append(BarChartDataEntry(x: Double(i), y: expenseValues[i]))
         }
         
-        let incomeDataSet = BarChartDataSet(entries: incomeEntries, label: "수입")
+        let incomeLabel = NSLocalizedString("chart_label_income", comment: "Chart label for income")
+        let expenseLabel = NSLocalizedString("chart_label_expense", comment: "Chart label for expense")
+        
+        let incomeDataSet = BarChartDataSet(entries: incomeEntries, label: incomeLabel)
         incomeDataSet.setColor(.systemGreen)
         
-        let expenseDataSet = BarChartDataSet(entries: expenseEntries, label: "수출")
+        let expenseDataSet = BarChartDataSet(entries: expenseEntries, label: expenseLabel)
         expenseDataSet.setColor(.systemRed)
         
         let data = BarChartData(dataSets: [incomeDataSet, expenseDataSet])

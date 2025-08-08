@@ -193,7 +193,10 @@ extension DetailCalendarViewController {
         let titleLabel: UILabel = UILabel()
         titleLabel.textColor = .label
         titleLabel.textAlignment = .center
-        titleLabel.text = "🗒️ 일별 수입/지출 내역"
+        
+        // NSLocalizedString를 사용하여 텍스트를 현지화합니다.
+        titleLabel.text = NSLocalizedString("daily_transaction_title", comment: "The title for the daily income/expense list view.")
+        
         titleLabel.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
         titleLabel.sizeToFit()
         
@@ -210,9 +213,9 @@ enum DetailCalendar: Int, CaseIterable {
     var tile: String {
         switch self {
         case .calendar:
-            return "📆 달력"
+            return NSLocalizedString("detail_calendar_tab_title", comment: "Title for the calendar view tab.")
         case .detailTable:
-            return "📋 수입/지출 내역"
+            return NSLocalizedString("detail_table_tab_title", comment: "Title for the income/expense details tab.")
         }
     }
 }
