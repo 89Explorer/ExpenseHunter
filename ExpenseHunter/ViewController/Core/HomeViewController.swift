@@ -29,6 +29,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .secondarySystemBackground
         configureUI()
+        checkFont()
         //        bindViewModel()
     }
     
@@ -106,14 +107,18 @@ class HomeViewController: UIViewController {
     // MARK - Action Method
     @objc private func moreButtonTapped(_ sender: UIButton) {
         guard let section = HomeSection(rawValue: sender.tag) else { return }
-        print("더보기 버튼 탭됨: \(section)")
+        //print("더보기 버튼 탭됨: \(section)")
         switch section {
         case .income:
-            let chartVC = DetailChartViewController(type: .income)
-            navigationController?.pushViewController(chartVC, animated: true)
+            //let chartVC = DetailChartViewController(type: .income)
+            //navigationController?.pushViewController(chartVC, animated: true)
+            let moreChartVC = MoreChartViewController(type: .income)
+            navigationController?.pushViewController(moreChartVC, animated: true)
         case .expense:
-            let chartVC = DetailChartViewController(type: .expense)
-            navigationController?.pushViewController(chartVC, animated: true)
+            //let chartVC = DetailChartViewController(type: .expense)
+            //navigationController?.pushViewController(chartVC, animated: true)
+            let moreChartVC = MoreChartViewController(type: .expense)
+            navigationController?.pushViewController(moreChartVC, animated: true)
         case .chart:
             let calendarVC = DetailCalendarViewController()
             navigationController?.pushViewController(calendarVC, animated: true)
@@ -177,7 +182,7 @@ extension HomeViewController {
         
         // "오늘, "
         let todayAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "OTSBAggroB", size: 24) ?? UIFont.systemFont(ofSize: 24, weight: .bold),
+            .font: UIFont(name: "OTSBAggroL", size: 24) ?? UIFont.systemFont(ofSize: 24, weight: .bold),
             .foregroundColor: UIColor.label
         ]
         attributedString.append(NSAttributedString(string: todayText, attributes: todayAttributes))
@@ -362,6 +367,12 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         switch section {
+        case .income:
+            let chartVC = DetailChartViewController(type: .income)
+            navigationController?.pushViewController(chartVC, animated: true)
+        case .expense:
+            let chartVC = DetailChartViewController(type: .expense)
+            navigationController?.pushViewController(chartVC, animated: true)
         case .today:
             let id = transactionViewModel.todayTransactions[indexPath.row].id
             let editVC = AddTransactionViewController(mode: .edit(id: id))

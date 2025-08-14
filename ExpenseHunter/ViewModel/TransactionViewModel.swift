@@ -22,6 +22,7 @@ final class TransactionViewModel {
     @Published private(set) var totalIncomeThisMonth: Int = 0
     @Published private(set) var totalExpenseThisMonth: Int = 0
     @Published private(set) var weeklySummaryData: [(day: String, income: Double, expense: Double)] = []
+    @Published var weeklyTotals: [(week: Int, total: Double)] = []
     
     var currentCategories: [String] {
         transaction?.transaction.categoryOptions ?? []
@@ -71,6 +72,12 @@ final class TransactionViewModel {
         totalIncomeThisMonth = totalAmount(type: .income, in: Date(), granularity: .month)
         totalExpenseThisMonth = totalAmount(type: .expense, in: Date(), granularity: .month)
         weeklySummaryData = weeklySummary(in: Date())
+    }
+    
+    
+    // 주차별 누적금액 계산 메서드
+    func fetchWeeklyTotals(month: Int, type: TransactionType) {
+        self.weeklyTotals = weeklyTotals(for: month, transactionType: type)
     }
     
     
@@ -280,6 +287,97 @@ final class TransactionViewModel {
     }
     
     
+    // 특정 월의 주차별 합계를 계산
+    func weeklyTotals(
+        for month: Int,
+        in year: Int? = nil,
+        transactionType: TransactionType
+    ) -> [(week: Int, total: Double)] {
+        
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone.current
+        
+        let targetYear = year ?? calendar.component(.year, from: Date())
+        
+        print("===== weeklyTotals 호출 =====")
+        print("📅 Target: \(targetYear)년 \(month)월 | Type: \(transactionType)")
+        print("💾 Transactions 총 개수: \(transactions.count)")
+        
+        // 전체 데이터 출력
+        for tx in transactions {
+            let comps = calendar.dateComponents([.year, .month, .day, .weekOfMonth], from: tx.date)
+            print(" - Raw: \(tx.date) | Y:\(comps.year!) M:\(comps.month!) D:\(comps.day!) W:\(comps.weekOfMonth!) | Type: \(tx.transaction) | Amount: \(tx.amount)")
+        }
+        
+        // 1️⃣ 필터링
+        let filtered = transactions.filter { tx in
+            let comps = calendar.dateComponents([.year, .month], from: tx.date)
+            let monthOK = comps.month == month
+            let yearOK  = comps.year == targetYear
+            let typeOK  = tx.transaction == transactionType
+            
+            // 조건별로 어디서 걸리는지 로그
+            if !monthOK {
+                print("❌ 제외(월 불일치): \(tx.date)")
+            } else if !yearOK {
+                print("❌ 제외(연도 불일치): \(tx.date)")
+            } else if !typeOK {
+                print("❌ 제외(타입 불일치): \(tx.date)")
+            }
+            
+            return monthOK && yearOK && typeOK
+        }
+        
+        print("✅ 필터 통과 개수: \(filtered.count)")
+        
+        // 2️⃣ 주차별 그룹핑
+        let byWeek = Dictionary(grouping: filtered) { tx in
+            calendar.component(.weekOfMonth, from: tx.date)
+        }
+        
+        // 3️⃣ 합계 계산 & 정렬
+        let result: [(week: Int, total: Double)] = byWeek.map { (week, items) in
+            let sum = items.reduce(0.0) { $0 + Double($1.amount) }
+            print("📊 Week \(week): \(sum) (건수: \(items.count))")
+            return (week: week, total: sum)
+        }
+        .sorted { $0.week < $1.week }
+        
+        print("===== weeklyTotals 종료 =====")
+        return result
+    }
+
+
+//    func weeklyTotals(for month: Int,
+//                      in year: Int? = nil,
+//                      transactionType: TransactionType) -> [(week: Int, total: Double)] {
+//        let calendar = Calendar.current
+//
+//        // 같은 월 + (옵션) 같은 해로 필터
+//        let filtered = transactions.filter { tx in
+//            let comps = calendar.dateComponents([.year, .month], from: tx.date)
+//            let monthOK = comps.month == month
+//            let yearOK  = year == nil || comps.year == year
+//            return monthOK && yearOK && tx.transaction == transactionType
+//        }
+//
+//        // 주차별 그룹핑
+//        let byWeek = Dictionary(grouping: filtered) { tx in
+//            calendar.component(.weekOfMonth, from: tx.date)
+//        }
+//
+//        // ✅ Double로 누적 (초깃값 0.0, 매 항목 Double 캐스팅)
+//        let result: [(week: Int, total: Double)] = byWeek.map { (week, items) in
+//            let sum = items.reduce(0.0) { $0 + Double($1.amount) }
+//            return (week: week, total: sum)
+//        }
+//        .sorted { $0.week < $1.week }
+//
+//        return result
+//    }
+
+    
+    
     // 누적 금액 계산
     func totalAmount(
         type: TransactionType,
@@ -307,19 +405,19 @@ final class TransactionViewModel {
     
     
     // 반복 주기에 따라 날짜 계산
-//    private func nextCycleDate(from date: Date, cycle: RepeatCycle) -> Date {
-//        var component: Calendar.Component
-//        
-//        switch cycle {
-//        case .daily: component = .day
-//        case .weekly: component = .weekOfYear
-//        case .monthly: component = .month
-//        case .yearly: component = .year
-//        case .none: return date
-//        }
-//        
-//        return Calendar.current.date(byAdding: component, value: 1, to: date) ?? date
-//    }
+    //    private func nextCycleDate(from date: Date, cycle: RepeatCycle) -> Date {
+    //        var component: Calendar.Component
+    //        
+    //        switch cycle {
+    //        case .daily: component = .day
+    //        case .weekly: component = .weekOfYear
+    //        case .monthly: component = .month
+    //        case .yearly: component = .year
+    //        case .none: return date
+    //        }
+    //        
+    //        return Calendar.current.date(byAdding: component, value: 1, to: date) ?? date
+    //    }
     
     // MARK: - 반복 기능 관련 메서드
     // 1. 실행 메서드 (반복 항목만 필터링)
@@ -363,7 +461,7 @@ final class TransactionViewModel {
             }
             .map { $0.date }
             .max() ?? base.date
-
+        
         return nextCycleDate(from: latest, cycle: cycle)
     }
     
@@ -391,7 +489,7 @@ final class TransactionViewModel {
             isRepeated: false,
             repeatCycle: .none
         )
-
+        
         transactionManager.createTransaction(new)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] saved in
                 self?.transactions.append(saved)

@@ -81,7 +81,7 @@
 "category_tax" = "Tax";
 "category_event" = "Events/Gifts";
 "category_savings" = "Savings";
-"category_appliances" = "Home Appliances";
+"category_appliances" = "Appliances";
 "category_utilities" = "Utilities";
 "category_credit_card" = "Credit Card";
 "category_pet" = "Pet";
@@ -109,9 +109,17 @@
 "chart_table_title" = "📊 Chart";
 "detail_table_title" = "📋 Detail";
 
-"category" = "category";
+"chart_label_category" = "category";
+"chart_no_data" = "Looks like there's no data yet! Add a transaction and a beautiful chart will appear here.";
 
 "detail_calendar_tab_title" = "📆 Calendar";
 "detail_table_tab_title" = "📋 Details";
 
 "daily_transaction_title" = "🗒️ Daily Details";
+
+"Monthly_Expense" = "📅 Monthly Expense";
+"Monthly_Income" = "📅 Monthly Income";
+
+"Alert_Title_Limit_Exceeded" = "Input Exceeded ⚠️";
+"Alert_Message_Digit_Limit" = "Amounts greater than 9 digits cannot be entered.";
+"Alert_Button_OK" = "OK";

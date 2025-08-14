@@ -109,9 +109,19 @@
 "chart_table_title" = "📊 차트";
 "detail_table_title" = "📋 상세";
 
-"category" = "항목";
+"chart_label_category" = "항목";
+"chart_no_data" = "데이터가 아직 없네요! 거래 내역을 추가하면 멋진 차트가 나타날 거예요.";
 
 "detail_calendar_tab_title" = "📆 달력";
 "detail_table_tab_title" = "📋 상세 내역";
 
 "daily_transaction_title" = "🗒️ 일별 수입/지출 내역";
+
+"Monthly_Expense" = "📅 월별 지출";
+"Monthly_Income" = "📅 월별 수입";
+
+"Alert_Title_Limit_Exceeded" = "입력 초과 ⚠️";
+"Alert_Message_Digit_Limit" = "9자리 이상의 금액은 입력할 수 없습니다.";
+"Alert_Button_OK" = "확인";
+
+

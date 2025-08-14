@@ -30,7 +30,9 @@ class AddMemoViewController: UIViewController {
     
     private var saveButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle("완료", for: .normal)
+        
+        let saveText = NSLocalizedString("done", comment: "Text for done")
+        button.setTitle(saveText, for: .normal)
         button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16)
         button.layer.cornerRadius = 12

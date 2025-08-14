@@ -185,6 +185,18 @@ final class AddAmountViewController: UIViewController {
             return 0
         }
     }
+    
+    private func showLimitAlert() {
+        let title = NSLocalizedString("Alert_Title_Limit_Exceeded", comment: "title for Alert Limit")
+        let message = NSLocalizedString("Alert_Message_Digit_Limit", comment: "message for Alert Limit")
+        let okButtonText = NSLocalizedString("Alert_Button_OK", comment: "text for OK")
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: okButtonText, style: .default, handler: nil)
+        
+        alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+    }
 
 
     
@@ -232,6 +244,19 @@ final class AddAmountViewController: UIViewController {
             dismiss(animated: true)
 
         default:
+            
+            // 숫자가 입력될 때만 자릿수 검사
+            if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."].contains(key) {
+                // 현재 입력된 문자열에서 숫자만 추출 (예: 1234)
+                // 연산자가 포함된 경우에는 자릿수 제한을 하지 않는다.
+                let currentNumbers = rawExpression.filter({ "0"..."9" ~= $0 || $0 == "." })
+                
+                // 숫자의 길이가 9자리를 초과하면 에러메시지 띄우기
+                if currentNumbers.count >= 9 && key != "." {
+                    showLimitAlert()
+                    return
+                }
+            }
             rawExpression += key
         }
 

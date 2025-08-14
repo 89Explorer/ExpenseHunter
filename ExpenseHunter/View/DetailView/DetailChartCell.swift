@@ -38,6 +38,7 @@ class DetailChartCell: UITableViewCell {
         pieChart.legend.enabled = true
         pieChart.drawHoleEnabled = false
         pieChart.entryLabelColor = .label
+        pieChart.setExtraOffsets(left: 8, top: 8, right: 8, bottom: 8)
         
         pieChart.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(pieChart)
@@ -49,66 +50,85 @@ class DetailChartCell: UITableViewCell {
         ])
     }
     
-//    func configureChart(with data: [(category: String, amount: Double)]) {
-//        let entries = data.map { PieChartDataEntry(value: $0.amount, label: $0.category) }
-//        let dataSet = PieChartDataSet(entries: entries, label: "지출 항목")
-//        
-//        dataSet.sliceSpace = 2.0
-//        dataSet.selectionShift = 7
-//        
-//        // ✅ 색상 지정 (예시)
-//        dataSet.colors = ChartColorTemplates.material() +
-//        ChartColorTemplates.joyful() +
-//        ChartColorTemplates.pastel()
-//        
-//        let pieData = PieChartData(dataSet: dataSet)
-//        pieData.setValueTextColor(.label)
-//        //pieData.setValueFont(.systemFont(ofSize: 12, weight: .medium))
-//        pieData.setValueFont(UIFont(name: "OTSBAggroL", size: 10) ?? (.systemFont(ofSize: 12, weight: .medium)))
-//        
-//        // ✅ 커스텀 포맷터 적용
-//        pieData.setValueFormatter(CurrencyValueFormatter())
-//        
-//        pieChart.data = pieData
-//        pieChart.notifyDataSetChanged()
-//    }
     
-    func configureChart(with data: [(category: String, amount: Double)], usePercentage: Bool = false) {
+    func configureChart(
+        with data: [(category: String, amount: Double)],
+        usePercentage: Bool = false,
+        animationEnabled: Bool = true
+    ) {
+        // 📌 데이터가 비었을 때 안내
+        guard data.contains(where: { $0.amount > 0 }) else {
+            pieChart.data = nil
+            pieChart.centerText = nil  // ✅ centerText 제거
+            pieChart.noDataText = NSLocalizedString("chart_no_data", comment: "No data available message")
+            pieChart.notifyDataSetChanged()
+            return
+        }
+        
+        // 📝 데이터 매핑
         let entries = data.map { PieChartDataEntry(value: $0.amount, label: $0.category) }
         
+        // 🌍 현지화된 라벨
+        let categoryLabel = NSLocalizedString("chart_label_category", comment: "Label for category in pie chart")
         
-        let category = NSLocalizedString("category", comment: "Label for category")
-        let dataSet = PieChartDataSet(entries: entries, label: category)
-
+        // 🥧 데이터셋 생성
+        let dataSet = PieChartDataSet(entries: entries, label: categoryLabel)
         dataSet.sliceSpace = 2.0
         dataSet.selectionShift = 7
-
-        dataSet.colors = ChartColorTemplates.material() +
-                         ChartColorTemplates.joyful() +
-                         ChartColorTemplates.pastel()
-
-        // ✅ 퍼센트 표시 여부 설정
+        
+        // 🎨 유니크 색상 적용
+        dataSet.colors = generateUniqueColors(count: entries.count)
+        
+        // 📏 라벨 표시 스타일
         dataSet.valueLinePart1OffsetPercentage = 0.8
-        dataSet.valueLinePart1Length = 0.2
-        dataSet.valueLinePart2Length = 0.4
-        dataSet.yValuePosition = .outsideSlice  // 라벨을 차트 밖으로 그리면서 선(line)을 함께 그리는 옵션이 활성화
+        dataSet.valueLinePart1Length = 0.1
+        dataSet.valueLinePart2Length = 0.2
+        dataSet.yValuePosition = .outsideSlice
         dataSet.xValuePosition = .outsideSlice
-
+        
+        // 📦 차트 데이터 객체
         let pieData = PieChartData(dataSet: dataSet)
         pieData.setValueTextColor(.label)
-        pieData.setValueFont(UIFont(name: "OTSBAggroL", size: 10) ?? .systemFont(ofSize: 12, weight: .medium))
-
-        // ✅ 조건에 따라 포맷터 설정
+        
+        // 🔠 데이터 개수에 따라 폰트 크기 조정
+        let dynamicFontSize: CGFloat = entries.count > 8 ? 8 : 12
+        pieData.setValueFont(UIFont(name: "OTSBAggroL", size: dynamicFontSize) ?? .systemFont(ofSize: dynamicFontSize, weight: .medium))
+        
+        // 🔄 퍼센트 / 금액 표시
         if usePercentage {
-            // 퍼센트 사용 시, PieChartView에도 설정
             pieChart.usePercentValuesEnabled = true
             pieData.setValueFormatter(PercentageValueFormatter())
         } else {
             pieChart.usePercentValuesEnabled = false
             pieData.setValueFormatter(CurrencyValueFormatter())
         }
-
+        
+        // 📌 데이터 적용
         pieChart.data = pieData
         pieChart.notifyDataSetChanged()
+        
+        // 🎞 애니메이션 옵션
+        if animationEnabled {
+            pieChart.spin(duration: 1.0,
+                          fromAngle: self.pieChart.rotationAngle,
+                          toAngle: self.pieChart.rotationAngle + 120)
+        }
+    }
+}
+
+
+// MARK: - Extension: DetailChartCell
+extension DetailChartCell {
+    
+    /// 🎨 유니크 색상 배열 생성
+    func generateUniqueColors(count: Int) -> [UIColor] {
+        
+        var colors: [UIColor] = []
+        
+        for i in 0..<count {
+            let hue = CGFloat(i) / CGFloat(count)
+            colors.append(UIColor(hue: hue, saturation: 0.8, brightness: 0.9, alpha: 1.0))
+        }
+        return colors
     }
 }

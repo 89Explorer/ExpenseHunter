@@ -41,10 +41,14 @@ class DetailChartViewController: UIViewController {
         print("선택된 type: \(transactionType)")
         configureUI()
         configureNavigaiton()
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         transactionViewModel.readAllTransactions()
         bindViewModel()
     }
-    
     
     
     // MARK: - Function
@@ -159,12 +163,14 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         switch section {
         case .chart:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: DetailChartCell.reuseIdentifier, for: indexPath) as? DetailChartCell else { return UITableViewCell() }
+            cell.selectionStyle = .none
             cell.configureChart(with: filteredData, usePercentage: true)
             return cell
         case .detail:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTodayStatusCell.reuseIdentifier, for: indexPath) as? HomeTodayStatusCell else { return UITableViewCell() }
             let sortedData = filteredData.sorted { $0.amount > $1.amount }
             let item = sortedData[indexPath.row]
+            cell.selectionStyle = .none
             cell.configureChart(with: item, type: transactionType)
             return cell
         }

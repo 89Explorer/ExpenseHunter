@@ -4,6 +4,7 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
+		<string>daerongFont.ttf</string>
 		<string>SB_OTF_B.otf</string>
 		<string>SB_OTF_M.otf</string>
 		<string>SB_OTF_L.otf</string>

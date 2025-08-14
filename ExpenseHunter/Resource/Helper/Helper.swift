@@ -41,6 +41,8 @@ func checkFont() {
     }
 }
 
+// Ownglyph_daelong-Rg
+
 /*
  PieChartData에서 기본적으로 Double 값을 String으로 변환해 표시
  이걸 원하는 형식(예: ₩ 25,000,000 원)으로 표시하려면 PieChartData의 값 포맷터(ValueFormatter)를 커스텀
