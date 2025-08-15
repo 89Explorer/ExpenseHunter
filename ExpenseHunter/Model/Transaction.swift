@@ -123,7 +123,7 @@ enum TransactionType: String {
         }
     }
 
-    var categoryImageMap: [String: String] {
+    /*var categoryImageMap: [String: String] {
         switch self {
         case .income:
             return [
@@ -167,7 +167,99 @@ enum TransactionType: String {
                 NSLocalizedString("category_others", comment: ""): "ellipsis.circle.fill"
             ]
         }
+    }*/
+    
+    var categoryImageMap: [String: String] {
+        switch self {
+        case .income:
+            return [
+                NSLocalizedString("category_salary", comment: ""): "salary.png",
+                NSLocalizedString("category_bonus", comment: ""): "bonus.png",
+                NSLocalizedString("category_allowance", comment: ""): "allowance.png",
+                NSLocalizedString("category_side_job", comment: ""): "briefcase.png",
+                NSLocalizedString("category_investment", comment: ""): "investment.png",
+                NSLocalizedString("category_financial_income", comment: ""): "financial_income.png",
+                NSLocalizedString("category_incentive", comment: ""): "incentive.png",
+                NSLocalizedString("category_retirement", comment: ""): "retirement.png",
+                NSLocalizedString("category_rental_income", comment: ""): "house.png",
+                NSLocalizedString("category_dividend", comment: ""): "chart_pie.png",
+                NSLocalizedString("category_repayment", comment: ""): "arrow.uturn.png",
+                NSLocalizedString("category_inheritance", comment: ""): "person_2.png",
+                NSLocalizedString("category_lottery", comment: ""): "lottery.png",
+                NSLocalizedString("category_other_income", comment: ""): "other_income.png"
+            ]
+        case .expense:
+            return [
+                NSLocalizedString("category_food", comment: ""): "fork_knife.png",
+                NSLocalizedString("category_transport", comment: ""): "car.png",
+                NSLocalizedString("category_entertainment", comment: ""): "music_note.png",
+                NSLocalizedString("category_living", comment: ""): "cart_living.png",
+                NSLocalizedString("category_clothing", comment: ""): "tshirt.png",
+                NSLocalizedString("category_insurance", comment: ""): "insurance.png",
+                NSLocalizedString("category_beauty", comment: ""): "beauty.png",
+                NSLocalizedString("category_health", comment: ""): "health.png",
+                NSLocalizedString("category_education", comment: ""): "book.png",
+                NSLocalizedString("category_communication", comment: ""): "antenna.png",
+                NSLocalizedString("category_membership", comment: ""): "netflix.png",
+                NSLocalizedString("category_tax", comment: ""): "tax.png",
+                NSLocalizedString("category_event", comment: ""): "event.png",
+                NSLocalizedString("category_savings", comment: ""): "savings.png",
+                NSLocalizedString("category_appliances", comment: ""): "tv.png",
+                NSLocalizedString("category_utilities", comment: ""): "bolt.png",
+                NSLocalizedString("category_credit_card", comment: ""): "creditcard.png",
+                NSLocalizedString("category_pet", comment: ""): "pawprint.png",
+                NSLocalizedString("category_travel", comment: ""): "airplane.png",
+                NSLocalizedString("category_house", comment: ""): "homerent.png",
+                NSLocalizedString("category_others", comment: ""): "other_income.png"
+            ]
+        }
     }
+    
+    /*var categoryImageMap: [String: String] {
+        switch self {
+        case .income:
+            return [
+                NSLocalizedString("category_salary", comment: ""): "💰",
+                NSLocalizedString("category_bonus", comment: ""): "🎁",
+                NSLocalizedString("category_allowance", comment: ""): "👐",
+                NSLocalizedString("category_side_job", comment: ""): "💼",
+                NSLocalizedString("category_investment", comment: ""): "📈",
+                NSLocalizedString("category_financial_income", comment: ""): "💹",
+                NSLocalizedString("category_incentive", comment: ""): "🏆",
+                NSLocalizedString("category_retirement", comment: ""): "👴",
+                NSLocalizedString("category_rental_income", comment: ""): "🏠",
+                NSLocalizedString("category_dividend", comment: ""): "🥧",
+                NSLocalizedString("category_repayment", comment: ""): "↩️",
+                NSLocalizedString("category_inheritance", comment: ""): "👨‍👩‍👧‍👦",
+                NSLocalizedString("category_lottery", comment: ""): "🎲",
+                NSLocalizedString("category_other_income", comment: ""): "❓"
+            ]
+        case .expense:
+            return [
+                NSLocalizedString("category_food", comment: ""): "🍽",
+                NSLocalizedString("category_transport", comment: ""): "🚗",
+                NSLocalizedString("category_entertainment", comment: ""): "🎵",
+                NSLocalizedString("category_living", comment: ""): "🛒",
+                NSLocalizedString("category_clothing", comment: ""): "👕",
+                NSLocalizedString("category_insurance", comment: ""): "🛡",
+                NSLocalizedString("category_beauty", comment: ""): "💇‍♀️",
+                NSLocalizedString("category_health", comment: ""): "🏥",
+                NSLocalizedString("category_education", comment: ""): "📚",
+                NSLocalizedString("category_communication", comment: ""): "📡",
+                NSLocalizedString("category_membership", comment: ""): "📺",
+                NSLocalizedString("category_tax", comment: ""): "🧾",
+                NSLocalizedString("category_event", comment: ""): "🎉",
+                NSLocalizedString("category_savings", comment: ""): "🏦",
+                NSLocalizedString("category_appliances", comment: ""): "🖥️",
+                NSLocalizedString("category_utilities", comment: ""): "⚡️",
+                NSLocalizedString("category_credit_card", comment: ""): "💳",
+                NSLocalizedString("category_pet", comment: ""): "🐾",
+                NSLocalizedString("category_travel", comment: ""): "✈️",
+                NSLocalizedString("category_house", comment: ""): "🏡",
+                NSLocalizedString("category_others", comment: ""): "❓"
+            ]
+        }
+    }*/
 }
 
 

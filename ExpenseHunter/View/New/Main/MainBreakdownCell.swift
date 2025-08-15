@@ -27,7 +27,7 @@ class MainBreakdownCell: UICollectionViewCell {
     // MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
-        configureUI()
+        setupDefaultChartSettings()
     }
     
     required init?(coder: NSCoder) {
@@ -36,14 +36,14 @@ class MainBreakdownCell: UICollectionViewCell {
     
     
     // MARK: - Function
-    private func configureUI() {
+    private func setupDefaultChartSettings() {
         backgroundColor = .clear
         
         containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 8
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
-        statutsImage.image = UIImage(systemName: "fork.knife")
+        statutsImage.image = UIImage(named: "homerent.png")
         statutsImage.tintColor = .systemGreen
         statutsImage.contentMode = .scaleAspectFit
         statutsImage.backgroundColor = UIColor.systemGray6
@@ -78,7 +78,7 @@ class MainBreakdownCell: UICollectionViewCell {
         dateLabel.text = "2일전"
         dateLabel.font = UIFont(name: "Ownglyph_daelong-Rg", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .regular)
         dateLabel.textColor = .secondaryLabel
-        dateLabel.textAlignment = .center
+        dateLabel.textAlignment = .left
         dateLabel.numberOfLines = 1
         
         amountLabel.text = "₩ 1,060,000"
@@ -86,28 +86,29 @@ class MainBreakdownCell: UICollectionViewCell {
         amountLabel.textColor = .label
         amountLabel.numberOfLines = 1
         amountLabel.textAlignment = .right
-        //amountLabel.setContentHuggingPriority(.required, for: .horizontal)
+        amountLabel.setContentHuggingPriority(.required, for: .horizontal)
+    
+        // memoImageView와 photoImageView를 담는 스택 뷰
+        let imageStackView: UIStackView = UIStackView(arrangedSubviews: [memoImageView, photoImageView])
+        imageStackView.axis = .horizontal
+        imageStackView.spacing = 4
+        imageStackView.distribution = .fill
         
-        let innerStackView: UIStackView = UIStackView(arrangedSubviews: [memoImageView, photoImageView])
-        innerStackView.axis = .horizontal
-        innerStackView.spacing = 4
-        innerStackView.distribution = .fill
-        //innerStackView.alignment = .fill
-        //innerStackView.setContentHuggingPriority(.required, for: .horizontal)
-        
-        let middleStackView: UIStackView = UIStackView(arrangedSubviews: [innerStackView, dateLabel])
+        // 이미지 스택 뷰와 dateLabel을 담는 스택 뷰 (위치 고정 역할)
+        let middleStackView: UIStackView = UIStackView(arrangedSubviews: [imageStackView, dateLabel])
         middleStackView.axis = .horizontal
-        middleStackView.spacing = 8
+        middleStackView.spacing = 8 // ✅ 이미지와 날짜 레이블 간의 간격을 8로 설정
         middleStackView.alignment = .center
+        middleStackView.distribution = .fill
         middleStackView.translatesAutoresizingMaskIntoConstraints = false
+        middleStackView.setContentHuggingPriority(.defaultLow, for: .horizontal) // ✅ 남은 공간을 흡수하도록 우선순위를 낮춥니다.
         
+        // `categoryLabel`, `middleStackView`, `amountLabel`을 담는 전체 스택 뷰
         let totalStackView: UIStackView = UIStackView(arrangedSubviews: [categoryLabel, middleStackView, amountLabel])
         totalStackView.axis = .horizontal
         totalStackView.spacing = 12
         totalStackView.distribution = .fill
-        //totalStackView.alignment = .fill
-        //totalStackView.isLayoutMarginsRelativeArrangement = true
-        //totalStackView.layoutMargins = .zero
+        totalStackView.alignment = .center
         totalStackView.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.addSubview(containerView)
@@ -124,8 +125,6 @@ class MainBreakdownCell: UICollectionViewCell {
             statutsImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             statutsImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             statutsImage.widthAnchor.constraint(equalToConstant: 28),
-            //statutsImage.heightAnchor.constraint(equalTo: statutsImage.widthAnchor),
-            
             
             memoImageView.widthAnchor.constraint(equalToConstant: 20),
             memoImageView.heightAnchor.constraint(equalTo: memoImageView.widthAnchor),
@@ -138,8 +137,48 @@ class MainBreakdownCell: UICollectionViewCell {
             totalStackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
             totalStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8),
             
-            middleStackView.widthAnchor.constraint(equalToConstant: 100)
+            middleStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 160)
+            
         ])
+    }
+    
+    
+    func configure(with data: ExpenseModel) {
+        let category = data.category
+        categoryLabel.text = category
+        
+        let type = data.transaction
+        if let imageName = type.categoryImageMap[category] {
+            statutsImage.image = UIImage(named: imageName)
+        }
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        
+        if Locale.current.identifier == "ko" {
+            formatter.locale = Locale(identifier: "ko_KR")
+        } else {
+            formatter.locale = Locale.current
+        }
+        
+        let formattedAmount = formatter.string(from: NSNumber(value: data.amount))
+        
+        if type == .income {
+            amountLabel.text = "\(formattedAmount ?? "0")"
+            amountLabel.textColor = .systemGreen
+        } else  if type == .expense {
+            amountLabel.text = "-\(formattedAmount ?? "0")"
+            amountLabel.textColor = .systemRed
+        }
+        
+        memoImageView.isHidden = false
+        memoImageView.tintColor = ((data.memo?.count) == 0) ? UIColor.secondaryLabel : UIColor.label
+        
+        photoImageView.isHidden = false
+        photoImageView.tintColor = (data.image == nil) ? UIColor.secondaryLabel : UIColor.label
+        
+        let createdDate = data.date
+        dateLabel.text = relativeDateString(from: createdDate)
         
     }
     

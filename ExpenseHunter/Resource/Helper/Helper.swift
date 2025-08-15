@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import DGCharts
+import Charts
 
 
 class BasePaddingLabel: UILabel {
@@ -47,24 +48,18 @@ func checkFont() {
  PieChartData에서 기본적으로 Double 값을 String으로 변환해 표시
  이걸 원하는 형식(예: ₩ 25,000,000 원)으로 표시하려면 PieChartData의 값 포맷터(ValueFormatter)를 커스텀
  */
-class CurrencyValueFormatter: NSObject, ValueFormatter {
-
+class CurrencyValueFormatter: ValueFormatter {
     private let formatter: NumberFormatter
 
-    override init() {
+    init(locale: Locale) {
         self.formatter = NumberFormatter()
-        self.formatter.numberStyle = .decimal
-        self.formatter.groupingSeparator = ","
-        self.formatter.maximumFractionDigits = 0
-        super.init()
+        self.formatter.numberStyle = .currency
+        self.formatter.locale = locale
+        self.formatter.maximumFractionDigits = 0 // 소수점 제거 (필요시 변경)
     }
 
-    // ✅ DGCharts에서는 이 메서드를 구현해야 함
-    func stringForValue(_ value: Double,
-                        entry: ChartDataEntry,
-                        dataSetIndex: Int,
-                        viewPortHandler: ViewPortHandler?) -> String {
-        return "₩ \(formatter.string(from: NSNumber(value: value)) ?? "0") 원"
+    func stringForValue(_ value: Double, entry: ChartDataEntry, dataSetIndex: Int, viewPortHandler: ViewPortHandler?) -> String {
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
 }
 
@@ -77,3 +72,25 @@ class PercentageValueFormatter: NSObject, ValueFormatter {
         return String(format: "%.1f%%", value)
     }
 }
+
+
+// 날짜 계산 ("2일 전", "3일 전", "오늘" ,"어제")
+func relativeDateString(from date: Date) -> String {
+    let calendar = Calendar.current
+    let now = Date()
+
+    // 날짜 차이 계산 (일 단위)
+    let components = calendar.dateComponents([.day], from: calendar.startOfDay(for: date), to: calendar.startOfDay(for: now))
+    let dayDiff = components.day ?? 0
+
+    switch dayDiff {
+    case 0:
+        return "오늘"
+    case 1:
+        return "어제"
+    default:
+        return "\(dayDiff)일 전"
+    }
+}
+
+

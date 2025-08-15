@@ -11,6 +11,11 @@ import Combine
 class MainViewController: UIViewController {
     
     
+    // MARK: - Variable
+    private let transactionViewModel: TransactionViewModel = TransactionViewModel()
+    private var cancellables: Set<AnyCancellable> = Set<AnyCancellable>()
+    
+    
     // MARK: - UI Component
     private var mainCollectionView: UICollectionView!
     
@@ -22,8 +27,29 @@ class MainViewController: UIViewController {
         configureNavigation()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        transactionViewModel.readAllTransactions()
+        transactionViewModel.setAllTransactions()
+        transactionViewModel.checkAndGenerateRepeatedTransactionsIfNeeded()
+        bindViewModel()
+    }
+    
     
     // MARK: - Function
+    private func bindViewModel() {
+        transactionViewModel.$transactions
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                
+                guard let self else { return }
+                
+                self.mainCollectionView.reloadData()
+                
+            }
+            .store(in: &cancellables)
+    }
+    
     private func configureUI() {
         view.backgroundColor = .secondarySystemBackground
         
@@ -153,10 +179,14 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         switch section {
         case .summary:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainSummaryCell.reuseIdentifier, for: indexPath) as? MainSummaryCell else { return UICollectionViewCell() }
-            
+            cell.configure(with: transactionViewModel.totalBalanceThisMonth, income: transactionViewModel.totalInomeAmountThisMonth, expense: transactionViewModel.totalExpenseAmountThisMonth, incomeCount: transactionViewModel.totalIncomeCountThisMonth, expenseCount: transactionViewModel.totalExpenseCountThisMonth,
+                           incomeGraphData: transactionViewModel.incomeGraphData, expenseGraphData: transactionViewModel.expenseGraphData
+            )
             return cell
         case .breakdown:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainBreakdownCell.reuseIdentifier, for: indexPath) as? MainBreakdownCell else { return UICollectionViewCell() }
+            let item =  transactionViewModel.transactions[indexPath.row]
+            cell.configure(with: item)
             return cell
         }
     }

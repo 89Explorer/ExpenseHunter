@@ -100,7 +100,7 @@ class DetailChartCell: UITableViewCell {
             pieData.setValueFormatter(PercentageValueFormatter())
         } else {
             pieChart.usePercentValuesEnabled = false
-            pieData.setValueFormatter(CurrencyValueFormatter())
+            //pieData.setValueFormatter(CurrencyValueFormatter())
         }
         
         // 📌 데이터 적용

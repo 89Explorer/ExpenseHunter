@@ -326,7 +326,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeExpenseCell.reuseIdentifier, for: indexPath) as? HomeExpenseCell else { return UITableViewCell() }
             
             cell.selectionStyle = .none
-            let amount = section == .income ? transactionViewModel.totalIncomeThisMonth : transactionViewModel.totalExpenseThisMonth
+            let amount = section == .income ? transactionViewModel.totalInomeAmountThisMonth : transactionViewModel.totalExpenseAmountThisMonth
             let type: TransactionType = section == .income ? .income : .expense
             
             //let title = section == .income ? "이번달, 누적 수입" : "이번달, 누적 지출"

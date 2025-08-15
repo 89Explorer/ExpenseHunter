@@ -19,8 +19,15 @@ final class TransactionViewModel {
     @Published var errorMessage: String?
     
     @Published private(set) var todayTransactions: [ExpenseModel] = []
-    @Published private(set) var totalIncomeThisMonth: Int = 0
-    @Published private(set) var totalExpenseThisMonth: Int = 0
+    @Published private(set) var totalBalanceThisMonth: Int = 0
+    @Published private(set) var totalInomeAmountThisMonth: Int = 0
+    @Published private(set) var totalExpenseAmountThisMonth: Int = 0
+    @Published private(set) var totalIncomeCountThisMonth: Int = 0
+    @Published private(set) var totalExpenseCountThisMonth: Int = 0
+    
+    @Published private(set) var incomeGraphData: [(category: String, amount: Double)] = []
+    @Published private(set) var expenseGraphData: [(category: String, amount: Double)] = []
+    
     @Published private(set) var weeklySummaryData: [(day: String, income: Double, expense: Double)] = []
     @Published var weeklyTotals: [(week: Int, total: Double)] = []
     
@@ -69,9 +76,13 @@ final class TransactionViewModel {
     // 각 Published Properties에 값을 전달
     func setAllTransactions() {
         todayTransactions = filteredTransactions(in: Date(), granularity: .day)
-        totalIncomeThisMonth = totalAmount(type: .income, in: Date(), granularity: .month)
-        totalExpenseThisMonth = totalAmount(type: .expense, in: Date(), granularity: .month)
+        totalInomeAmountThisMonth = totalAmount(type: .income, in: Date(), granularity: .month)
+        totalExpenseAmountThisMonth = totalAmount(type: .expense, in: Date(), granularity: .month)
         weeklySummaryData = weeklySummary(in: Date())
+        totalBalanceThisMonth = totalInomeAmountThisMonth - totalExpenseAmountThisMonth
+        totalIncomeCountThisMonth = filteredTransactions(type: .income, in: Date()).count
+        totalExpenseCountThisMonth = filteredTransactions(type: .expense, in: Date()).count
+        updateGrapthData(for: Date(), granularity: .month)
     }
     
     
@@ -260,6 +271,43 @@ final class TransactionViewModel {
         return filtered
     }
     
+    // 소득, 지출의 그래프에 전달하기 위한 데이터 필터링 (amount 큰 순으로 최대 3건)
+    func updateGrapthData(for date: Date, granularity: Calendar.Component = .month) {
+        let incomeTransactions = filteredTransactions(type: .income, in: date, granularity: granularity)
+        let expenseTransactions = filteredTransactions(type: .expense, in: date, granularity: granularity)
+        
+        
+        // 소득 데이터 처리
+        var incomeSummary: [String: Double] = [:]
+        for transaction in incomeTransactions {
+            incomeSummary[transaction.category, default:  0.0] += Double(transaction.amount)
+        }
+        self.incomeGraphData = incomeSummary.sorted { $0.value > $1.value }.prefix(3).map { ($0.key, $0.value) }
+        //print("incomeGraphData: \(incomeGraphData)")
+        
+        
+        // 지출 데이터 처리
+        var expenseSummary: [String: Double] = [:]
+        for transaction in expenseTransactions {
+            expenseSummary[transaction.category, default: 0.0] += Double(transaction.amount)
+        }
+        self.expenseGraphData = expenseSummary.sorted { $0.value > $1.value}.prefix(3).map { ($0.key, $0.value)}
+        //print("expenseGraphData: \(expenseGraphData)")
+        
+    }
+    
+    
+    
+    // 누적 금액 계산
+    func totalAmount(
+        type: TransactionType,
+        in date: Date,
+        granularity: Calendar.Component = .month) -> Int {
+            let filtered = filteredTransactions(type: type, in: date, granularity: granularity)
+            return filtered.reduce(0) { $0 + $1.amount}
+        }
+    
+    
     
     // 주어진 날자 기준으로 주간 데이터 반환 (월 ~ 일)
     func weeklySummary(in baseDate: Date) -> [(day: String, income: Double, expense: Double)] {
@@ -341,52 +389,40 @@ final class TransactionViewModel {
             print("📊 Week \(week): \(sum) (건수: \(items.count))")
             return (week: week, total: sum)
         }
-        .sorted { $0.week < $1.week }
+            .sorted { $0.week < $1.week }
         
         print("===== weeklyTotals 종료 =====")
         return result
     }
-
-
-//    func weeklyTotals(for month: Int,
-//                      in year: Int? = nil,
-//                      transactionType: TransactionType) -> [(week: Int, total: Double)] {
-//        let calendar = Calendar.current
-//
-//        // 같은 월 + (옵션) 같은 해로 필터
-//        let filtered = transactions.filter { tx in
-//            let comps = calendar.dateComponents([.year, .month], from: tx.date)
-//            let monthOK = comps.month == month
-//            let yearOK  = year == nil || comps.year == year
-//            return monthOK && yearOK && tx.transaction == transactionType
-//        }
-//
-//        // 주차별 그룹핑
-//        let byWeek = Dictionary(grouping: filtered) { tx in
-//            calendar.component(.weekOfMonth, from: tx.date)
-//        }
-//
-//        // ✅ Double로 누적 (초깃값 0.0, 매 항목 Double 캐스팅)
-//        let result: [(week: Int, total: Double)] = byWeek.map { (week, items) in
-//            let sum = items.reduce(0.0) { $0 + Double($1.amount) }
-//            return (week: week, total: sum)
-//        }
-//        .sorted { $0.week < $1.week }
-//
-//        return result
-//    }
-
     
     
-    // 누적 금액 계산
-    func totalAmount(
-        type: TransactionType,
-        in date: Date,
-        granularity: Calendar.Component = .month) -> Int {
-            let filtered = filteredTransactions(type: type, in: date, granularity: granularity)
-            return filtered.reduce(0) { $0 + $1.amount}
-        }
-    
+    //    func weeklyTotals(for month: Int,
+    //                      in year: Int? = nil,
+    //                      transactionType: TransactionType) -> [(week: Int, total: Double)] {
+    //        let calendar = Calendar.current
+    //
+    //        // 같은 월 + (옵션) 같은 해로 필터
+    //        let filtered = transactions.filter { tx in
+    //            let comps = calendar.dateComponents([.year, .month], from: tx.date)
+    //            let monthOK = comps.month == month
+    //            let yearOK  = year == nil || comps.year == year
+    //            return monthOK && yearOK && tx.transaction == transactionType
+    //        }
+    //
+    //        // 주차별 그룹핑
+    //        let byWeek = Dictionary(grouping: filtered) { tx in
+    //            calendar.component(.weekOfMonth, from: tx.date)
+    //        }
+    //
+    //        // ✅ Double로 누적 (초깃값 0.0, 매 항목 Double 캐스팅)
+    //        let result: [(week: Int, total: Double)] = byWeek.map { (week, items) in
+    //            let sum = items.reduce(0.0) { $0 + Double($1.amount) }
+    //            return (week: week, total: sum)
+    //        }
+    //        .sorted { $0.week < $1.week }
+    //
+    //        return result
+    //    }
     
     // 유효성 검사 메서드
     func validateTransaction() -> Bool {
@@ -407,7 +443,7 @@ final class TransactionViewModel {
     // 반복 주기에 따라 날짜 계산
     //    private func nextCycleDate(from date: Date, cycle: RepeatCycle) -> Date {
     //        var component: Calendar.Component
-    //        
+    //
     //        switch cycle {
     //        case .daily: component = .day
     //        case .weekly: component = .weekOfYear
@@ -415,7 +451,7 @@ final class TransactionViewModel {
     //        case .yearly: component = .year
     //        case .none: return date
     //        }
-    //        
+    //
     //        return Calendar.current.date(byAdding: component, value: 1, to: date) ?? date
     //    }
     
