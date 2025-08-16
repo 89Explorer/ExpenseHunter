@@ -65,6 +65,6 @@ class AddCategroyCell: UICollectionViewCell {
     
     func configure(title: String, iconSystemName: String) {
         titleLabel.text = title
-        iconView.image = UIImage(systemName: iconSystemName)
+        iconView.image = UIImage(named: iconSystemName)
     }
 }

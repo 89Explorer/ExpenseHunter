@@ -18,6 +18,7 @@ class MainViewController: UIViewController {
     
     // MARK: - UI Component
     private var mainCollectionView: UICollectionView!
+    private let floatingButton: UIButton = UIButton(type: .custom)
     
     
     // MARK: - Life Cycle
@@ -70,13 +71,31 @@ class MainViewController: UIViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: MainSectionHeaderView.reuseIdentifier)
         
+        
+        let config = UIImage.SymbolConfiguration(pointSize: 28)
+        let plusImage = UIImage(systemName: "plus", withConfiguration: config)
+        floatingButton.setImage(plusImage, for: .normal)
+        floatingButton.tintColor = .label
+        floatingButton.backgroundColor = .systemBlue
+        floatingButton.layer.cornerRadius = 28
+        floatingButton.layer.shadowOpacity = 0.3
+        floatingButton.layer.shadowRadius = 8
+        floatingButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+        floatingButton.translatesAutoresizingMaskIntoConstraints = false
+        
         view.addSubview(mainCollectionView)
+        view.addSubview(floatingButton)
         
         NSLayoutConstraint.activate([
             mainCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 4),
             mainCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),
             mainCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            mainCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+            mainCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
+            
+            floatingButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            floatingButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            floatingButton.widthAnchor.constraint(equalToConstant: 56),
+            floatingButton.heightAnchor.constraint(equalToConstant: 56)
         ])
         
     }
@@ -152,6 +171,13 @@ class MainViewController: UIViewController {
         
         return layout
     }
+    
+    
+    // MARK: - Action Method
+    @objc private func addButtonTapped(_ sender: UIButton) {
+        let addTransactionVC = AddTransactionViewController(mode: .create)
+        navigationController?.pushViewController(addTransactionVC, animated: true)
+    }
 }
 
 
@@ -169,7 +195,7 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         case .summary:
             return 1
         case .breakdown:
-            return 5
+            return transactionViewModel.recentTransactions.count
         }
     }
     
@@ -179,15 +205,35 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         switch section {
         case .summary:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainSummaryCell.reuseIdentifier, for: indexPath) as? MainSummaryCell else { return UICollectionViewCell() }
-            cell.configure(with: transactionViewModel.totalBalanceThisMonth, income: transactionViewModel.totalInomeAmountThisMonth, expense: transactionViewModel.totalExpenseAmountThisMonth, incomeCount: transactionViewModel.totalIncomeCountThisMonth, expenseCount: transactionViewModel.totalExpenseCountThisMonth,
-                           incomeGraphData: transactionViewModel.incomeGraphData, expenseGraphData: transactionViewModel.expenseGraphData
+            cell.configure(with: transactionViewModel.totalBalanceThisMonth,
+                           income: transactionViewModel.totalInomeAmountThisMonth,
+                           expense: transactionViewModel.totalExpenseAmountThisMonth,
+                           incomeCount: transactionViewModel.totalIncomeCountThisMonth,
+                           expenseCount: transactionViewModel.totalExpenseCountThisMonth,
+                           incomeGraphData: transactionViewModel.incomeGraphData,
+                           expenseGraphData: transactionViewModel.expenseGraphData
             )
             return cell
         case .breakdown:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainBreakdownCell.reuseIdentifier, for: indexPath) as? MainBreakdownCell else { return UICollectionViewCell() }
-            let item =  transactionViewModel.transactions[indexPath.row]
+          
+            let item = transactionViewModel.recentTransactions[indexPath.row]
             cell.configure(with: item)
             return cell
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let section = MainCollectionViewSection(rawValue: indexPath.section) else { fatalError("Invalid section")}
+        
+        switch section {
+        case .summary:
+            let detailVC = MoreChartViewController(type: .expense)
+            navigationController?.pushViewController(detailVC, animated: true)
+        case .breakdown:
+            let id = transactionViewModel.recentTransactions[indexPath.row].id
+            let editVC = AddTransactionViewController(mode: .edit(id: id))
+            navigationController?.pushViewController(editVC, animated: true)
         }
     }
     
@@ -203,14 +249,30 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         guard let sectionType = MainCollectionViewSection(rawValue: indexPath.section) else { return UICollectionReusableView()
         }
         
-        let headerView = collectionView.dequeueReusableSupplementaryView(
-            ofKind: kind,
-            withReuseIdentifier: MainSectionHeaderView.reuseIdentifier,
-            for: indexPath
-        ) as! MainSectionHeaderView
-        
-        headerView.configure(title: sectionType.title)
-        return headerView
+        switch sectionType {
+        case .summary:
+            let headerView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: MainSectionHeaderView.reuseIdentifier,
+                for: indexPath
+            ) as! MainSectionHeaderView
+            
+            headerView.configure(title: sectionType.title, showMore: false)
+            return headerView
+        case .breakdown:
+            let headerView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: MainSectionHeaderView.reuseIdentifier,
+                for: indexPath
+            ) as! MainSectionHeaderView
+            
+            headerView.configure(title: sectionType.title)
+            headerView.onMoreTapped = {
+                print("더 보기 눌림")
+                
+            }
+            return headerView
+        }
     }
 }
 

@@ -48,7 +48,11 @@ class MoreChartViewController: UIViewController {
         super.viewDidLoad()
         configureNavigaiton()
         configureUI()
-        
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         transactionViewModel.readAllTransactions()
         //transactionViewModel.setAllTransactions()
         bindViewModel()
@@ -58,11 +62,6 @@ class MoreChartViewController: UIViewController {
             month: selectedMonth,
             type: transactionType
         )
-    }
-    
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
 
     }
     
@@ -98,7 +97,7 @@ class MoreChartViewController: UIViewController {
             guard let sectionType = MoreChart(rawValue: section) else { return nil }
             switch sectionType {
             case .monthly:
-                let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(60), heightDimension: .absolute(80))
+                let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(60), heightDimension: .absolute(52))
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
@@ -153,8 +152,6 @@ extension MoreChartViewController: UICollectionViewDelegate, UICollectionViewDat
         switch section {
         case .monthly:
             return months.count
-        case .chart:
-            return 1
         default:
             return 1
         }
@@ -168,11 +165,6 @@ extension MoreChartViewController: UICollectionViewDelegate, UICollectionViewDat
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoreMonthCell.reuseIdentifier, for: indexPath) as! MoreMonthCell
             let item = months[indexPath.item]
             cell.configure(with: item, isSelected: item.number == selectedMonth)
-            return cell
-            
-        case .chart:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoreChartCell.reuseIdentifier, for: indexPath) as? MoreChartCell else { return UICollectionViewCell() }
-            cell.configure(with: transactionViewModel.weeklyTotals)
             return cell
             
         default:
@@ -217,11 +209,8 @@ extension MoreChartViewController {
         let titleLabel: UILabel = UILabel()
         titleLabel.textColor = .label
         titleLabel.textAlignment = .center
-        
-        titleLabel.text = transactionType == .expense ? NSLocalizedString("Monthly_Expense", comment: "") : NSLocalizedString("Monthly_Income", comment: "")
-        
-        titleLabel.font = UIFont(name: "OTSBAggroB", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .bold)
-        titleLabel.sizeToFit()
+        titleLabel.text = NSLocalizedString("Monthly_Breakdown", comment: "Title for Monthly Breakdown")
+        titleLabel.font =  UIFont(name: "Ownglyph_daelong-Rg", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .regular)
         
         self.navigationItem.titleView = titleLabel
     }
@@ -231,18 +220,14 @@ extension MoreChartViewController {
 // MARK: - Enum
 enum MoreChart: Int, CaseIterable {
     case monthly
-    case breakdown
-    case chart
-    case detail
-    case daily
+    case income
+    case expense
     
     var title: String {
         switch self {
-        case .monthly: return "월 선택"
-        case .breakdown: return "작성 내역"
-        case .chart: return "차트"
-        case .detail: return "리스트"
-        case .daily: return "일별"
+        case .monthly: return "월별 현황"
+        case .income: return "소득"
+        case .expense: return "지출"
         }
     }
 }

@@ -44,10 +44,10 @@ class MoreMonthCell: UICollectionViewCell {
         containerView.layer.masksToBounds = true
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
-        monthLabel.font =  UIFont(name: "OTSBAggroB", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .bold)
+        monthLabel.font = UIFont(name: "Ownglyph_daelong-Rg", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .regular)
         monthLabel.textAlignment = .center
         
-        numberLabel.font = UIFont(name: "OTSBAggroB", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .bold)
+        numberLabel.font = UIFont(name: "Ownglyph_daelong-Rg", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .regular)
         numberLabel.textAlignment = .center
         
         let stack = UIStackView(arrangedSubviews: [monthLabel, numberLabel])
@@ -66,14 +66,16 @@ class MoreMonthCell: UICollectionViewCell {
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
             
-            stack.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            stack.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
+            monthLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            monthLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
+            //stack.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            //stack.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
         ])
     }
     
     func configure(with item: MonthItem, isSelected: Bool) {
         monthLabel.text = item.shortName
-        numberLabel.text  = "\(item.number)"
+        //numberLabel.text  = "\(item.number)"
         
         containerView.backgroundColor = isSelected ? .systemBlue : .secondarySystemBackground
         monthLabel.textColor = isSelected ? .label : .secondaryLabel

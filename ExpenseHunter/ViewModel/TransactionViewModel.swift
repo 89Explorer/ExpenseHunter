@@ -19,14 +19,21 @@ final class TransactionViewModel {
     @Published var errorMessage: String?
     
     @Published private(set) var todayTransactions: [ExpenseModel] = []
+    
     @Published private(set) var totalBalanceThisMonth: Int = 0
     @Published private(set) var totalInomeAmountThisMonth: Int = 0
     @Published private(set) var totalExpenseAmountThisMonth: Int = 0
     @Published private(set) var totalIncomeCountThisMonth: Int = 0
     @Published private(set) var totalExpenseCountThisMonth: Int = 0
-    
     @Published private(set) var incomeGraphData: [(category: String, amount: Double)] = []
     @Published private(set) var expenseGraphData: [(category: String, amount: Double)] = []
+    
+    
+    // - MainBreakdownCell에서 쓰이는 프로퍼티
+    // ✅ 최근 5개 거래 내역을 저장하는 프로퍼티를 추가
+    // transactions가 변경될 때마다 이 값도 자동으로 업데이트
+    @Published private(set) var recentTransactions: [ExpenseModel] = []
+    
     
     @Published private(set) var weeklySummaryData: [(day: String, income: Double, expense: Double)] = []
     @Published var weeklyTotals: [(week: Int, total: Double)] = []
@@ -72,7 +79,6 @@ final class TransactionViewModel {
     
     
     // MARK: - Function
-    
     // 각 Published Properties에 값을 전달
     func setAllTransactions() {
         todayTransactions = filteredTransactions(in: Date(), granularity: .day)
@@ -83,12 +89,20 @@ final class TransactionViewModel {
         totalIncomeCountThisMonth = filteredTransactions(type: .income, in: Date()).count
         totalExpenseCountThisMonth = filteredTransactions(type: .expense, in: Date()).count
         updateGrapthData(for: Date(), granularity: .month)
+        updateRecentTransactions()
     }
     
     
     // 주차별 누적금액 계산 메서드
     func fetchWeeklyTotals(month: Int, type: TransactionType) {
         self.weeklyTotals = weeklyTotals(for: month, transactionType: type)
+    }
+    
+    
+    // ✅ transactions가 변경될 때 recentTransactions를 업데이트하는 메서드를 추가
+    func updateRecentTransactions() {
+        // 날짜를 기준으로 최신순으로 정렬 후, 최대 5개만 가져옴
+        self.recentTransactions = transactions.sorted { $0.date > $1.date}.prefix(4).map { $0 }
     }
     
     

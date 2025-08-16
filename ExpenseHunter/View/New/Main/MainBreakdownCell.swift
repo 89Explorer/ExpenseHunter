@@ -41,6 +41,8 @@ class MainBreakdownCell: UICollectionViewCell {
         
         containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 8
+        containerView.layer.shadowOpacity = 0.3
+        containerView.layer.shadowRadius = 4
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
         statutsImage.image = UIImage(named: "homerent.png")
@@ -137,7 +139,7 @@ class MainBreakdownCell: UICollectionViewCell {
             totalStackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
             totalStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8),
             
-            middleStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 160)
+            middleStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 180)
             
         ])
     }
